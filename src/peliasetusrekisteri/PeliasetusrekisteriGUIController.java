@@ -66,15 +66,6 @@ public class PeliasetusrekisteriGUIController {
     
     
     /**
-     * K‰sitell‰‰n OK -painallus
-     */
-    @FXML private void handleDefaultOK() {
-        Platform.exit();
-    }
-    
-    
-    
-    /**
      * Tietojen tallennus
      */
     private void tallenna() {

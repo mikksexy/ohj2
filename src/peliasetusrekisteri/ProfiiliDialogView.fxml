@@ -15,12 +15,12 @@
    <bottom>
       <HBox alignment="BOTTOM_RIGHT" spacing="10.0" BorderPane.alignment="BOTTOM_RIGHT">
          <children>
-            <Button mnemonicParsing="false" onAction="#handleDefaultOK" text="OK">
+            <Button mnemonicParsing="false" onAction="#handleDefaultOK" text="Tallenna">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleDefaultOK" text="Peruuta">
+            <Button cancelButton="true" mnemonicParsing="false" onAction="#handleDefaultCancel" text="Peruuta">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
