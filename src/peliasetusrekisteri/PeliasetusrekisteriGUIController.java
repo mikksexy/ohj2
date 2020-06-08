@@ -57,6 +57,14 @@ public class PeliasetusrekisteriGUIController {
     
     
     /**
+     * Käsitellään avunpyynnöt
+     */
+    @FXML void handleApua() {
+        Dialogs.showMessageDialog("Apuva!");
+    }
+    
+    
+    /**
      * Käsitellään ohjelman tietojen näyttäminen
      */
     @FXML private void handleTietoja() {
