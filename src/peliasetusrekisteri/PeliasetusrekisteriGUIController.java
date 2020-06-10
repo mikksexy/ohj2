@@ -7,7 +7,6 @@ import fi.jyu.mit.fxgui.*;
 /**
  * Luokka käyttöliittymän tapahtumien hoitamiseksi
  * @author Sami
- * @version 6.6.2020
  * @version 7.6.2020
  *
  */
