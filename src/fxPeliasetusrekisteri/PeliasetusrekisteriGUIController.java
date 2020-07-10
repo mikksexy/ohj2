@@ -13,7 +13,6 @@ import peliasetusrekisteri.SailoException;
 
 import java.io.PrintStream;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import fi.jyu.mit.fxgui.*;
@@ -21,7 +20,7 @@ import fi.jyu.mit.fxgui.*;
 /**
  * Luokka käyttöliittymän tapahtumien hoitamiseksi
  * @author Sami
- * @version 7.6.2020
+ * @version 10.7.2020
  *
  */
 public class PeliasetusrekisteriGUIController implements Initializable {
@@ -107,6 +106,9 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     private TextArea areaProfiili = new TextArea();
     
     
+    /**
+     * Alustetaan käyttöliittymä
+     */
     private void alusta() {
         panelProfiili.setContent(areaProfiili);
         areaProfiili.setFont(new Font("Courier New", 12));
@@ -117,6 +119,9 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     }
     
     
+    /**
+     * Näytetään kohdalla olevan profiilin tiedot
+     */
     private void naytaProfiili()  {
         profiiliKohdalla = chooserProfiilit.getSelectedObject();
         
@@ -167,6 +172,10 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     }
     
     
+    /**
+     * Haetaan profiili
+     * @param pnro profiilinumero, jota haetaan
+     */
     private void hae(int pnro) {
         chooserProfiilit.clear();
         
@@ -205,9 +214,8 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      */
     public void tulosta(PrintStream os, final Profiili profiili) {
         profiili.tulosta(os);
-        List<Joukkue> joukkue = rekisteri.annaJoukkue(profiili);
-        for (Joukkue jou : joukkue)
-            jou.tulosta(os);
+        Joukkue joukkue = rekisteri.annaJoukkue(profiili);
+        joukkue.tulosta(os);
     }
     
 }

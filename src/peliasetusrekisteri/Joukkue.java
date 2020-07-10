@@ -13,8 +13,7 @@ import java.io.*;
  *
  */
 public class Joukkue {
-    private int joukkueNro;
-    private int profiiliNro;
+    private int tunnusNro;
     private String nimi;
     private static int seuraavaNro = 1;
     
@@ -24,18 +23,20 @@ public class Joukkue {
      */
     public Joukkue() {
         taytaJoukkueTiedoilla();
+        rekisteroi();
     }
-
+    
     
     /**
-     * Alustetaan joukkue tietylle profiilille
-     * @param profiiliNro profiilin numero, jolle joukkue lisätään
+     * Luodaan uusi joukkue, jolle annetaan parametrina nimi
+     * @param joukkueNimi joukkueelle annettava nimi
      */
-    public Joukkue(int profiiliNro) {
-        this.profiiliNro = profiiliNro;
+    public Joukkue(String joukkueNimi) {
+        this.nimi = joukkueNimi;
+        rekisteroi();
     }
-    
-    
+
+        
     /**
      * Arvotaan satunnainen kokonaisluku väluille [ala,yla]
      * @param ala arvonnan alaraja
@@ -52,7 +53,6 @@ public class Joukkue {
      * Täyttää joukkueen nimellä ja yksilöivällä luvulla
      */
     public void taytaJoukkueTiedoilla() {
-        
         nimi = "Ence" + rand(1000, 2000);
     }
     
@@ -90,9 +90,9 @@ public class Joukkue {
      * </pre>
      */
     public int rekisteroi() {
-        joukkueNro = seuraavaNro;
+        tunnusNro = seuraavaNro;
         seuraavaNro++;
-        return joukkueNro;
+        return tunnusNro;
     }
 
     
@@ -101,19 +101,14 @@ public class Joukkue {
      * @return joukkueen id
      */
     public int getTunnusNro() {
-        return joukkueNro;
-    }
-
-
-    /**
-     * Palautetaan ketkä kuuluvat joukkueeseen 
-     * @return profiilien id
-     */
-    public int getProfiiliNro() {
-        return profiiliNro;
+        return tunnusNro;
     }
 
     
+    /**
+     * Muutetaan Joukkue-olio merkkijonoksi
+     */
+    @Override
     public String toString() {
         return nimi;
     }

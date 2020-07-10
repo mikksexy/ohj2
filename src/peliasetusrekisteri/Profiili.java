@@ -11,12 +11,12 @@ import java.io.PrintStream;
  * - osaa laittaa merkkijonon i:neksi kentäksi
  * 
  * @author Sami
- * @version 29.6.2020
+ * @version 10.7.2020
  *
  */
 public class Profiili {
     private int     tunnusNro;
-    private Joukkue joukkue             = new Joukkue();
+    private int     joukkue             = 0;
     private String  nimimerkki          = "";
     private double  hiirenHerkkyys      = 0.0;
     private int     dpi                 = 0;
@@ -60,7 +60,7 @@ public class Profiili {
      * @param out tietovirta johon tulostetaan
      */
     public void tulosta(PrintStream out) {
-        out.println(String.format("%03d", tunnusNro) + " nimimerkki: " + nimimerkki + " joukkue: " + joukkue.toString());
+        out.println(String.format("%03d", tunnusNro) + " nimimerkki: " + nimimerkki + " joukkue: " + joukkue);
         out.println("sens: " + hiirenHerkkyys + " dpi: " + dpi);
         out.println("resoluutio: " + naytonTarkkuus + " kuvasuhde: " + kuvasuhde + " " + skaalaus + " refresh rate: " + virkistystaajuus + " hz");
     }
@@ -112,6 +112,24 @@ public class Profiili {
      */
     public String getNimimerkki() {
         return nimimerkki;
+    }
+    
+    
+    /**
+     * Asetetaan profiilille joukkueen numero
+     * @param jnro joukkueen tunnusnumero
+     */
+    public void asetaJoukkue(int jnro) {
+        this.joukkue = jnro;
+    }
+    
+    
+    /**
+     * Palauttaa joukkuenumeron
+     * @return Palauttaa joukkuenumeron
+     */
+    public int getJoukkue() {
+        return joukkue;
     }
     
     

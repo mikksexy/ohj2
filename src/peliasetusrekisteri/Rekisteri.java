@@ -6,7 +6,7 @@ import java.util.List;
  * - huolehtii profiilit ja joukkueet -luokkien välisestä yhteistyöstä ja välittää näitä tietoja pyydettäessä
  * - lukee ja kirjoittaa rekisterin tiedostoon pyytämällä apua avustajiltaan
  * @author Sami
- * @version 30.6.2020
+ * @version 10.7.2020
  *
  */
 public class Rekisteri {
@@ -71,6 +71,27 @@ public class Rekisteri {
     
     
     /**
+     * Haetaan joukkueen tunnusnumero
+     * @param jou Joukkue jonka numero halutaan tietää
+     * @return Joukkueen numeron
+     */
+    public int annaJnro(Joukkue jou) {
+        return joukkueet.annaJnro(jou);
+    }
+    
+    
+    /**
+     * Asetetaan profiilille joukkue
+     * @param pro profiili, jolle laitetaan joukkue
+     * @param jou joukkuenumero, joka laitetaan profiiliin
+     */
+    public void asetaJoukkue(Profiili pro, Joukkue jou) {
+        int jnro = annaJnro(jou);
+        profiilit.asetaJoukkue(pro, jnro);
+    }
+    
+    
+    /**
      * Palauttaa i:n profiilin
      * @param i monesko profiili palautetaan
      * @return viite i:teen profiiliin
@@ -92,24 +113,48 @@ public class Rekisteri {
      * Rekisteri rekisteri = new Rekisteri();
      * Profiili allu1 = new Profiili(), allu2 = new Profiili(), allu3 = new Profiili();
      * allu1.rekisteroi(); allu2.rekisteroi(); allu3.rekisteroi();
-     * int id1 = allu1.getTunnusNro();
-     * int id2 = allu2.getTunnusNro();
-     * Joukkue ence1 = new Joukkue(id1); rekisteri.lisaa(ence1);
-     * Joukkue ence2 = new Joukkue(id2); rekisteri.lisaa(ence2);
-     * 
-     * List<Joukkue> loytyneet;
-     * loytyneet = rekisteri.annaJoukkue(allu3);
-     * loytyneet.size() === 0;
-     * loytyneet = rekisteri.annaJoukkue(allu1);
-     * loytyneet.size() === 1;
-     * loytyneet.get(0) == ence1 === true;
-     * loytyneet = rekisteri.annaJoukkue(allu2);
-     * loytyneet.size() === 1;
-     * loytyneet.get(0) == ence2 === true;
+     * Joukkue ence1 = new Joukkue("ence1"); rekisteri.lisaa(ence1);
+     * Joukkue ence2 = new Joukkue("ence2"); rekisteri.lisaa(ence2);
+     * rekisteri.asetaJoukkue(allu1, ence1);
+     * rekisteri.annaJoukkue(allu1) === ence1;
      * </pre>
      */
-    public List<Joukkue> annaJoukkue(Profiili profiili) {
-        return joukkueet.annaJoukkue(profiili.getTunnusNro());
+    public Joukkue annaJoukkue(Profiili profiili) {
+        return joukkueet.annaJoukkue(profiili.getJoukkue());
+    }
+    
+    
+    /**
+     * Haetaan joukkueen profiilit
+     * @param jou Joukkue jonka profiileja haetaan
+     * @return Listan profiilin joukkueesta...
+     * TODO: uusi joukkue pitäisi paikata vanha joukkue
+     * @example
+     * <pre name="test">
+     * #import java.util.*;
+     * 
+     * Rekisteri rekisteri = new Rekisteri();
+     * Profiili allu1 = new Profiili(), allu2 = new Profiili(), allu3 = new Profiili();
+     * allu1.rekisteroi(); allu2.rekisteroi(); allu3.rekisteroi();
+     * Joukkue ence1 = new Joukkue("ence1"); rekisteri.lisaa(ence1);
+     * Joukkue ence2 = new Joukkue("ence2"); rekisteri.lisaa(ence2);
+     * rekisteri.asetaJoukkue(allu1, ence1);
+     * rekisteri.asetaJoukkue(allu2, ence1);
+     *
+     * List<Profiili> loytyneet;
+     * loytyneet = rekisteri.annaProfiilit(ence2);
+     * loytyneet.size() === 0;
+     * rekisteri.asetaJoukkue(allu3, ence2);
+     * loytyneet = rekisteri.annaProfiilit(ence2);
+     * loytyneet.size() === 1;
+     * loytyneet.get(0) == allu3 === true;
+     * loytyneet = rekisteri.annaProfiilit(ence1);
+     * loytyneet.size() === 2;
+     * loytyneet.get(0) == allu1 === true;
+     * </pre>
+     */
+    public List<Profiili> annaProfiilit(Joukkue jou) {
+        return profiilit.annaProfiilit(jou.getTunnusNro());
     }
     
     
@@ -153,19 +198,15 @@ public class Rekisteri {
             rekisteri.lisaa(allu1);
             rekisteri.lisaa(allu2);
             
-            int id1 = allu1.getTunnusNro();
-            int id2 = allu2.getTunnusNro();
-            Joukkue ence1 = new Joukkue(id1); ence1.taytaJoukkueTiedoilla(); rekisteri.lisaa(ence1);
-            Joukkue ence2 = new Joukkue(id2); ence2.taytaJoukkueTiedoilla(); rekisteri.lisaa(ence2);
+            rekisteri.annaJoukkue(allu1).tulosta(System.out);
+            Joukkue ence1 = new Joukkue(); ence1.taytaJoukkueTiedoilla(); rekisteri.lisaa(ence1);
+            Joukkue ence2 = new Joukkue(); ence2.taytaJoukkueTiedoilla(); rekisteri.lisaa(ence2);
             
             System.out.println("testi");
             for (int i = 0; i < rekisteri.getProfiileja(); i++) {
                 Profiili profiili = rekisteri.annaProfiili(i);
                 System.out.println("Profiilin indeksi: " +  i);
                 profiili.tulosta(System.out);
-                List<Joukkue> loytyneet = rekisteri.annaJoukkue(profiili);
-                for (Joukkue jou : loytyneet)
-                    jou.tulosta(System.out);
             } 
         } catch (SailoException e) {
             System.err.println(e.getMessage());

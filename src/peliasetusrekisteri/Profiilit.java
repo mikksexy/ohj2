@@ -1,5 +1,8 @@
 package peliasetusrekisteri;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * - pitää yllä varsinaista profiilirekisteriä eli osaa lisätä ja poistaa profiilin
  * - lukee ja kirjoittaa profiilin tiedostoon
@@ -87,6 +90,30 @@ public class Profiilit {
         return lkm;
     }
     
+    
+    /**
+     * Asetetaan profiilille joukkuenumero
+     * @param pro profiili, jolle joukkuenumero asetetaan
+     * @param jnro joukkueen tunnusnumero
+     */
+    public void asetaJoukkue(Profiili pro, int jnro) {
+        pro.asetaJoukkue(jnro);
+    }
+    
+    
+    /**
+     * Palauttaa listan joukkueeseen kuuluvista profiileista
+     * @param tunnusNro joukkueen tunnusnumero
+     * @return Lista profiileista, jotka kuuluvat joukkueeseen
+     */
+    public List<Profiili> annaProfiilit(int tunnusNro) {
+        List<Profiili> loydetyt = new ArrayList<Profiili>();
+        for (Profiili pro : alkiot)
+            if (pro.getJoukkue() == tunnusNro) loydetyt.add(pro);
+        return loydetyt;
+    }
+    
+    
     /**
      * @param args Ei käytössä
      */
@@ -113,5 +140,4 @@ public class Profiilit {
             System.err.println(ex.getMessage());
         }
     }
-
 }

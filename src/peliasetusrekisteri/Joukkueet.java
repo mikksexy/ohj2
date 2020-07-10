@@ -74,11 +74,11 @@ public class Joukkueet implements Iterable<Joukkue>{
      * #import java.util.*;
      * 
      *  Joukkueet joukkueet = new Joukkueet();
-     *  Joukkue pitsi21 = new Joukkue(2); joukkueet.lisaa(pitsi21);
-     *  Joukkue pitsi11 = new Joukkue(1); joukkueet.lisaa(pitsi11);
-     *  Joukkue pitsi22 = new Joukkue(2); joukkueet.lisaa(pitsi22);
-     *  Joukkue pitsi12 = new Joukkue(1); joukkueet.lisaa(pitsi12);
-     *  Joukkue pitsi23 = new Joukkue(2); joukkueet.lisaa(pitsi23);
+     *  Joukkue pitsi21 = new Joukkue(); joukkueet.lisaa(pitsi21);
+     *  Joukkue pitsi11 = new Joukkue(); joukkueet.lisaa(pitsi11);
+     *  Joukkue pitsi22 = new Joukkue(); joukkueet.lisaa(pitsi22);
+     *  Joukkue pitsi12 = new Joukkue(); joukkueet.lisaa(pitsi12);
+     *  Joukkue pitsi23 = new Joukkue(); joukkueet.lisaa(pitsi23);
      * 
      *  Iterator<Joukkue> i2=joukkueet.iterator();
      *  i2.next() === pitsi21;
@@ -87,15 +87,6 @@ public class Joukkueet implements Iterable<Joukkue>{
      *  i2.next() === pitsi12;
      *  i2.next() === pitsi23;
      *  i2.next() === pitsi12;  #THROWS NoSuchElementException  
-     *  
-     *  int n = 0;
-     *  int jnrot[] = {2,1,2,1,2};
-     *  
-     *  for ( Joukkue jou : joukkueet ) { 
-     *    jou.getProfiiliNro() === jnrot[n]; n++;  
-     *  }
-     *  
-     *  n === 5;
      *  
      * </pre>
      */
@@ -114,34 +105,28 @@ public class Joukkueet implements Iterable<Joukkue>{
      * #import java.util.*;
      * 
      *  Joukkueet joukkueet = new Joukkueet();
-     *  Joukkue pitsi21 = new Joukkue(2); joukkueet.lisaa(pitsi21);
-     *  Joukkue pitsi11 = new Joukkue(1); joukkueet.lisaa(pitsi11);
-     *  Joukkue pitsi22 = new Joukkue(2); joukkueet.lisaa(pitsi22);
-     *  Joukkue pitsi12 = new Joukkue(1); joukkueet.lisaa(pitsi12);
-     *  Joukkue pitsi23 = new Joukkue(2); joukkueet.lisaa(pitsi23);
-     *  Joukkue pitsi51 = new Joukkue(5); joukkueet.lisaa(pitsi51);
-     *  
-     *  List<Joukkue> loytyneet;
-     *  loytyneet = joukkueet.annaJoukkue(3);
-     *  loytyneet.size() === 0; 
-     *  loytyneet = joukkueet.annaJoukkue(1);
-     *  loytyneet.size() === 2; 
-     *  loytyneet.get(0) == pitsi11 === true;
-     *  loytyneet.get(1) == pitsi12 === true;
-     *  loytyneet = joukkueet.annaJoukkue(5);
-     *  loytyneet.size() === 1; 
-     *  loytyneet.get(0) == pitsi51 === true;
+     *  Joukkue pitsi21 = new Joukkue("pitsi21"); joukkueet.lisaa(pitsi21);
+     *  Joukkue pitsi11 = new Joukkue(); joukkueet.lisaa(pitsi11);
+     *  joukkueet.annaJoukkue(1) === pitsi21;
      * </pre> 
      */
-    public List<Joukkue> annaJoukkue(int tunnusnro) {
-        List<Joukkue> loydetyt = new ArrayList<Joukkue>();
+    public Joukkue annaJoukkue(int tunnusnro) {
+        Joukkue joukkue = new Joukkue();
         for (Joukkue jou : alkiot)
-            if (jou.getProfiiliNro() == tunnusnro) loydetyt.add(jou);
-            return loydetyt;
+            if (jou.getTunnusNro() == tunnusnro) joukkue = jou;
+            return joukkue;
     }
 
     
-
+    /**
+     * Haetaan joukkueen tunnusnumero
+     * @param jou Joukkue jonka tunnusnumero halutaan
+     * @return joukkueen tunnusnumeron
+     */
+    public int annaJnro(Joukkue jou) {
+        return jou.getTunnusNro();
+    }
+    
     /**
      * Testiohjelma luokalle
      * @param args Ei käytössä
@@ -163,14 +148,10 @@ public class Joukkueet implements Iterable<Joukkue>{
         joukkueet.lisaa(pitsi2);
         joukkueet.lisaa(pitsi4);
         
-        System.out.println("============= Harrastukset testi =================");
+        System.out.println("============= Joukkueet testi =================");
 
-        List<Joukkue> joukkueet2 = joukkueet.annaJoukkue(2);
-
-        for (Joukkue har : joukkueet2) {
-            System.out.print(har.getProfiiliNro() + " ");
-            har.tulosta(System.out);
-        }
+        
+        
 
     }
 
