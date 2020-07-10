@@ -23,7 +23,7 @@ public class Joukkue {
      * Alustetaan joukkue
      */
     public Joukkue() {
-        //
+        taytaJoukkueTiedoilla();
     }
 
     
@@ -50,10 +50,9 @@ public class Joukkue {
     
     /**
      * Täyttää joukkueen nimellä ja yksilöivällä luvulla
-     * @param nro Pelaajaprofiilin tunnusnumero
      */
-    public void taytaJoukkueTiedoilla(int nro) {
-        profiiliNro = nro;
+    public void taytaJoukkueTiedoilla() {
+        
         nimi = "Ence" + rand(1000, 2000);
     }
     
@@ -115,13 +114,18 @@ public class Joukkue {
     }
 
     
+    public String toString() {
+        return nimi;
+    }
+    
+    
     /**
      * Testiohjelma joukkueelle
      * @param args Ei käytössä
      */
     public static void main(String[] args) {
         Joukkue jou = new Joukkue();
-        jou.taytaJoukkueTiedoilla(2);
+        jou.taytaJoukkueTiedoilla();
         jou.tulosta(System.out);
 
     }

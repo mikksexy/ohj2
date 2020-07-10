@@ -161,7 +161,7 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     public void uusiJoukkue() {
         Joukkue jou = new Joukkue();
         jou.rekisteroi();
-        jou.taytaJoukkueTiedoilla(profiiliKohdalla.getTunnusNro());
+        jou.taytaJoukkueTiedoilla();
         rekisteri.lisaa(jou);
         hae(profiiliKohdalla.getTunnusNro());
     }

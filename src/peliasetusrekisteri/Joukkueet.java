@@ -149,13 +149,13 @@ public class Joukkueet implements Iterable<Joukkue>{
     public static void main(String[] args) {
         Joukkueet joukkueet = new Joukkueet();
         Joukkue pitsi1 = new Joukkue();
-        pitsi1.taytaJoukkueTiedoilla(2);
+        pitsi1.taytaJoukkueTiedoilla();
         Joukkue pitsi2 = new Joukkue();
-        pitsi1.taytaJoukkueTiedoilla(1);
+        pitsi1.taytaJoukkueTiedoilla();
         Joukkue pitsi3 = new Joukkue();
-        pitsi1.taytaJoukkueTiedoilla(2);
+        pitsi1.taytaJoukkueTiedoilla();
         Joukkue pitsi4 = new Joukkue();
-        pitsi1.taytaJoukkueTiedoilla(2);
+        pitsi1.taytaJoukkueTiedoilla();
 
         joukkueet.lisaa(pitsi1);
         joukkueet.lisaa(pitsi2);

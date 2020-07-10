@@ -155,8 +155,8 @@ public class Rekisteri {
             
             int id1 = allu1.getTunnusNro();
             int id2 = allu2.getTunnusNro();
-            Joukkue ence1 = new Joukkue(id1); ence1.taytaJoukkueTiedoilla(id1); rekisteri.lisaa(ence1);
-            Joukkue ence2 = new Joukkue(id2); ence1.taytaJoukkueTiedoilla(id2); rekisteri.lisaa(ence2);
+            Joukkue ence1 = new Joukkue(id1); ence1.taytaJoukkueTiedoilla(); rekisteri.lisaa(ence1);
+            Joukkue ence2 = new Joukkue(id2); ence2.taytaJoukkueTiedoilla(); rekisteri.lisaa(ence2);
             
             System.out.println("testi");
             for (int i = 0; i < rekisteri.getProfiileja(); i++) {

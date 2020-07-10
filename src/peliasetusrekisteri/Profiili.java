@@ -16,7 +16,7 @@ import java.io.PrintStream;
  */
 public class Profiili {
     private int     tunnusNro;
-    private int     joukkue;
+    private Joukkue joukkue             = new Joukkue();
     private String  nimimerkki          = "";
     private double  hiirenHerkkyys      = 0.0;
     private int     dpi                 = 0;
@@ -60,7 +60,7 @@ public class Profiili {
      * @param out tietovirta johon tulostetaan
      */
     public void tulosta(PrintStream out) {
-        out.println(String.format("%03d", tunnusNro) + " nimimerkki: " + nimimerkki + " joukkue: " + joukkue);
+        out.println(String.format("%03d", tunnusNro) + " nimimerkki: " + nimimerkki + " joukkue: " + joukkue.toString());
         out.println("sens: " + hiirenHerkkyys + " dpi: " + dpi);
         out.println("resoluutio: " + naytonTarkkuus + " kuvasuhde: " + kuvasuhde + " " + skaalaus + " refresh rate: " + virkistystaajuus + " hz");
     }
@@ -116,6 +116,7 @@ public class Profiili {
     
     
     /**
+     * Testataan luokan aliohjelmia
      * @param args Ei käytössä
      */
     public static void main(String[] args) {
