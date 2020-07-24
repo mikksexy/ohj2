@@ -11,7 +11,7 @@ import javafx.fxml.FXMLLoader;
 /**
  * Ohjelmassa pidetään kirjaa profiilien peliasetuksista
  * @author Sami
- * @version 7.6.2020
+ * @version 24.7.2020
  */
 public class PeliasetusrekisteriMain extends Application {
     @Override
@@ -25,10 +25,16 @@ public class PeliasetusrekisteriMain extends Application {
             primaryStage.setScene(scene);
             primaryStage.setTitle("Peliasetusrekisteri");
             
+            primaryStage.setOnCloseRequest((event) -> {
+                if ( !peliasetusrekisteriCtrl.voikoSulkea() ) event.consume();
+            });
+
             Rekisteri rekisteri = new Rekisteri();
             peliasetusrekisteriCtrl.setRekisteri(rekisteri);
             
             primaryStage.show();
+            
+            peliasetusrekisteriCtrl.lueTiedosto();
         } catch(Exception e) {
             e.printStackTrace();
         }

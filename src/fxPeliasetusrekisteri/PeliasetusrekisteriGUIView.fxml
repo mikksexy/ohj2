@@ -77,8 +77,8 @@
                   <VBox alignment="CENTER">
                      <children>
                         <Label alignment="CENTER" text="Hakuehto" textAlignment="CENTER" />
-                        <TextField />
-                        <ComboBoxChooser maxWidth="200.0" rivit="nimimerkki&#10;joukkue&#10;hiiren herkkyys&#10;DPI&#10;näytön tarkkuus&#10;kuvasuhde&#10;skaalaus&#10;virkistystaajuus" />
+                        <TextField fx:id="hakuehto" onAction="#handleHakuehto" />
+                        <ComboBoxChooser fx:id="cbKentat" maxWidth="200.0" rivit="nimimerkki&#10;joukkue&#10;hiiren herkkyys&#10;DPI&#10;näytön tarkkuus&#10;kuvasuhde&#10;skaalaus&#10;virkistystaajuus" />
                         <Label text="Profiilit" />
                      </children>
                   </VBox>
@@ -137,6 +137,10 @@
          <top>
             <Label text="Profiilin tiedot" BorderPane.alignment="CENTER" />
          </top>
+         <bottom>
+         	<Label fx:id="labelVirhe" alignment="CENTER" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" />
+         </bottom>
+         
       </BorderPane>
    </center>
 </BorderPane>

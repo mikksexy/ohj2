@@ -1,5 +1,11 @@
 package peliasetusrekisteri;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -7,13 +13,12 @@ import java.util.*;
  * - lukee ja kirjoittaa joukkueet tiedostoon
  * - osaa etsiä ja lajitella
  * @author Sami
- * @version 8.7.2020
+ * @version 24.7.2020
  *
  */
 public class Joukkueet implements Iterable<Joukkue>{
     private final Collection<Joukkue> alkiot = new ArrayList<Joukkue>();
-    
-    private String tiedostonNimi = "";
+    private boolean muutettu = false;
 
     
     /**
@@ -30,28 +35,79 @@ public class Joukkueet implements Iterable<Joukkue>{
      */
     public void lisaa(Joukkue jou) {
         alkiot.add(jou);
+        muutettu = true;
     }
     
     
     /**
-     * Lukee jäsenistön tiedostosta.  
-     * TODO Kesken.
-     * @param hakemisto tiedoston hakemisto
+     * Lukee joukkueet tiedostosta. 
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException 
+     * #import java.io.File;
+     *  Joukkueet joukkueet = new Joukkueet();
+     *  Joukkue ence1 = new Joukkue();
+     *  Joukkue ence2 = new Joukkue();
+     *  File tied = new File("joukkueet.dat");
+     *  tied.delete();
+     *  joukkueet.lueTiedostosta(); #THROWS SailoException
+     *  joukkueet.lisaa(ence1);
+     *  joukkueet.lisaa(ence2);
+     *  joukkueet.tallenna();
+     *  joukkueet = new joukkueet();
+     *  joukkueet.lueTiedostosta();
+     *  Iterator<Joukkue> i = joukkueet.iterator();
+     *  i.next().toString() === ence1.toString();
+     *  i.next().toString() === ence2.toString();
+     *  i.hasNext() === false;
+     *  joukkueet.lisaa(ence1);
+     *  joukkueet.tallenna();
+     * </pre>
      * @throws SailoException jos lukeminen epäonnistuu
      */
-    public void lueTiedostosta(String hakemisto) throws SailoException {
-        tiedostonNimi = hakemisto + ".jou";
-        throw new SailoException("Ei osata vielä lukea tiedostoa " + tiedostonNimi);
+    public void lueTiedostosta() throws SailoException {
+        try ( BufferedReader fi = new BufferedReader(new FileReader("joukkueet.dat")) ) {
+            String rivi;
+            while ( (rivi = fi.readLine()) != null ) {
+                rivi = rivi.trim();
+                if ( "".equals(rivi) || rivi.charAt(0) == ';' ) continue;
+                Joukkue joukkue = new Joukkue();
+                joukkue.parse(rivi);
+                lisaa(joukkue);
+            }
+            muutettu = false;
+        } catch ( FileNotFoundException e ) {
+            throw new SailoException("Tiedosto joukkueet.dat ei aukea" + e.getMessage());
+        } catch ( IOException e ) {
+            throw new SailoException("Ongelmia tiedoston kanssa: " + e.getMessage());
+        }
     }
 
-
+    
     /**
-     * Tallentaa joukkueet tiedostoon.  
-     * TODO Kesken.
-     * @throws SailoException jos tallennus epäonnistuu
+     * Tallentaa profiilit tiedostoon.  
+     * Tiedoston muoto:
+     * <pre>
+     * ; kommenttirivi
+     * 1|Natus Vincere
+     * 2|ENCE
+     * </pre>
+     * @throws SailoException jos talletus epäonnistuu
      */
     public void tallenna() throws SailoException {
-        throw new SailoException("Ei osata vielä tallentaa tiedostoa " + tiedostonNimi);
+        if ( !muutettu ) return;
+        
+        try ( PrintWriter fo = new PrintWriter(new FileWriter("joukkueet.dat")) ) {
+            for (Joukkue joukkue : alkiot) {
+                fo.println(joukkue.toString());
+            }
+        } catch ( FileNotFoundException ex ) {
+            throw new SailoException("Tiedosto joukkueet.dat ei aukea" + ex);
+        } catch ( IOException ex ) {
+            throw new SailoException("Tiedoston joukkueet.dat kirjoittamisessa ongelmia" + ex);
+        }
+
+        muutettu = false;
     }
 
 

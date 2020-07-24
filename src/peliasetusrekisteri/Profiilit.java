@@ -1,30 +1,37 @@
 package peliasetusrekisteri;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * - pitää yllä varsinaista profiilirekisteriä eli osaa lisätä ja poistaa profiilin
  * - lukee ja kirjoittaa profiilin tiedostoon
  * - osaa etsiä ja lajitella
  * @author Sami
- * @version 30.6.2020
+ * @version 24.7.2020
  *
  */
-public class Profiilit {
+public class Profiilit implements Iterable<Profiili>{
     private static final int MAX_PROFIILEJA = 5;
+    private boolean muutettu = false;
     private int lkm = 0;
-    private String tiedostonNimi = "";
     private Profiili[] alkiot = new Profiili[MAX_PROFIILEJA];
     
     
     /**
      * Lisää uuden profiilin tietorakenteeseen. Ottaa profiilin omistukseensa
      * @param profiili lisättävän profiilin viite
-     * @throws SailoException jos ei mahdu
      * @example
      * <pre name="test">
-     * #THROWS SailoException
      * Profiilit profiilit = new Profiilit();
      * Profiili allu1 = new Profiili(), allu2 = new Profiili();
      * profiilit.getLkm() === 0;
@@ -39,13 +46,20 @@ public class Profiilit {
      * profiilit.anna(3) === allu1; #THROWS IndexOutOfBoundsException
      * profiilit.lisaa(allu1); profiilit.getLkm() === 4;
      * profiilit.lisaa(allu1); profiilit.getLkm() === 5;
-     * profiilit.lisaa(allu1); #THROWS SailoException
+     * profiilit.lisaa(allu1); profiilit.getLkm() === 6;
      * </pre>
      */
-    public void lisaa(Profiili profiili) throws SailoException {
-        if (lkm >= alkiot.length) throw new SailoException("Liikaa alkioita");
+    public void lisaa(Profiili profiili) {
+        if (lkm >= alkiot.length) {
+            Profiili[] uusi = new Profiili[lkm + 5];
+            for ( int i = 0; i < lkm; i++) {
+                uusi[i] = alkiot[i];
+            }
+            alkiot = uusi;
+        }
         alkiot[lkm] = profiili;
         lkm++;
+        muutettu = true;
     }
     
     
@@ -63,23 +77,78 @@ public class Profiilit {
     
     
     /**
-     * Lukee jäsenistön tiedostosta.  Kesken.
-     * @param hakemisto tiedoston hakemisto
+     * Lukee profiilit tiedostosta. 
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException 
+     * #import java.io.File;
+     * 
+     *  Profiilit profiilit = new Profiilit();
+     *  Profiili allu1 = new Profiili(), allu2 = new Profiili();
+     *  allu1.taytaAlluTiedoilla();
+     *  allu2.taytaAlluTiedoilla();
+     *  File tied = new File("profiilit.dat");
+     *  tied.delete();
+     *  profiilit.lueTiedostosta(); #THROWS SailoException
+     *  profiilit.lisaa(allu1);
+     *  profiilit.lisaa(allu2);
+     *  profiilit.tallenna();
+     *  profiilit = new Profiilit();  // Poistetaan vanhat luomalla uusi
+     *  profiilit.lueTiedostosta();  // johon ladataan tiedot tiedostosta.
+     *  Iterator<Profiili> i = profiilit.iterator();
+     *  i.next() === allu1;
+     *  i.next() === allu2;
+     *  i.hasNext() === false;
+     *  profiilit.lisaa(allu2);
+     *  profiilit.tallenna();
+     * </pre>
      * @throws SailoException jos lukeminen epäonnistuu
      */
-    public void lueTiedostosta(String hakemisto) throws SailoException {
-        tiedostonNimi = hakemisto + "/profiilit.dat";
-        throw new SailoException("Ei osata vielä lukea tiedostoa " + tiedostonNimi);
+    public void lueTiedostosta() throws SailoException {
+        try ( BufferedReader fi = new BufferedReader(new FileReader("profiilit.dat")) ) {
+            String rivi;
+            while ( (rivi = fi.readLine()) != null ) {
+                rivi = rivi.trim();
+                if ( "".equals(rivi) || rivi.charAt(0) == ';' ) continue;
+                Profiili profiili = new Profiili();
+                profiili.parse(rivi);
+                lisaa(profiili);
+            }
+            muutettu = false;
+        } catch ( FileNotFoundException e ) {
+            throw new SailoException("Tiedosto profiilit.dat ei aukea" + e.getMessage());
+        } catch ( IOException e ) {
+            throw new SailoException("Ongelmia tiedoston kanssa: " + e.getMessage());
+        }
     }
 
     
     /**
-     * Tallentaa jäsenistön tiedostoon.  Kesken.
-     * @throws SailoException jos tallennus epäonnistuu
+     * Tallentaa profiilit tiedostoon.  
+     * Tiedoston muoto:
+     * <pre>
+     * ; kommenttirivi
+     * 2|allu|2|3.3|400|1024x768|4:3|black bars|144
+     * 5|Jamppi|2|1.25|800|1440x1080|4:3|stretched|144
+     * </pre>
+     * @throws SailoException jos talletus epäonnistuu
      */
     public void tallenna() throws SailoException {
-        throw new SailoException("Ei osata vielä tallentaa tiedostoa " + tiedostonNimi);
+        if ( !muutettu ) return;
+        
+        try ( PrintWriter fo = new PrintWriter(new FileWriter("profiilit.dat")) ) {
+            for (Profiili profiili : this) {
+                fo.println(profiili.toString());
+            }
+        } catch ( FileNotFoundException ex ) {
+            throw new SailoException("Tiedosto profiilit.dat ei aukea" + ex);
+        } catch ( IOException ex ) {
+            throw new SailoException("Tiedoston profiilit.dat kirjoittamisessa ongelmia" + ex);
+        }
+
+        muutettu = false;
     }
+
     
     
     /**
@@ -108,13 +177,132 @@ public class Profiilit {
      */
     public List<Profiili> annaProfiilit(int tunnusNro) {
         List<Profiili> loydetyt = new ArrayList<Profiili>();
-        for (Profiili pro : alkiot)
+        for (Profiili pro : this)
             if (pro.getJoukkue() == tunnusNro) loydetyt.add(pro);
         return loydetyt;
     }
     
     
     /**
+     * Luokka jäsenten iteroimiseksi.
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException 
+     * #PACKAGEIMPORT
+     * #import java.util.*;
+     * 
+     * Profiilit profiilit = new Profiilit();
+     * Profiili allu1 = new Profiili(), allu2 = new Profiili();
+     * allu1.rekisteroi(); allu2.rekisteroi();
+     *
+     * profiilit.lisaa(allu1); 
+     * profiilit.lisaa(allu2); 
+     * profiilit.lisaa(allu1); 
+     * 
+     * StringBuilder ids = new StringBuilder(30);
+     * for (Profiili profiili:profiilit)   // Kokeillaan for-silmukan toimintaa
+     *   ids.append(" "+profiili.getTunnusNro());           
+     * 
+     * String tulos = " " + allu1.getTunnusNro() + " " + allu2.getTunnusNro() + " " + allu1.getTunnusNro();
+     * 
+     * ids.toString() === tulos; 
+     * 
+     * ids = new StringBuilder(30);
+     * for (Iterator<Profiili>  i=profiilit.iterator(); i.hasNext(); ) { // ja iteraattorin toimintaa
+     *   Profiili profiili = i.next();
+     *   ids.append(" "+profiili.getTunnusNro());           
+     * }
+     * 
+     * ids.toString() === tulos;
+     * 
+     * Iterator<Profiili>  i=profiilit.iterator();
+     * i.next() == allu1  === true;
+     * i.next() == allu2  === true;
+     * i.next() == allu1  === true;
+     * 
+     * i.next();  #THROWS NoSuchElementException
+     *  
+     * </pre>
+     */
+    public class ProfiilitIterator implements Iterator<Profiili> {
+        private int kohdalla = 0;
+
+
+        /**
+         * Onko olemassa vielä seuraavaa profiilia
+         * @see java.util.Iterator#hasNext()
+         * @return true jos on vielä profiileja
+         */
+        @Override
+        public boolean hasNext() {
+            return kohdalla < getLkm();
+        }
+
+
+        /**
+         * Annetaan seuraava profiili
+         * @return seuraava profiili
+         * @throws NoSuchElementException jos seuraava alkiota ei enää ole
+         * @see java.util.Iterator#next()
+         */
+        @Override
+        public Profiili next() throws NoSuchElementException {
+            if ( !hasNext() ) throw new NoSuchElementException("Ei oo");
+            return anna(kohdalla++);
+        }
+
+
+        /**
+         * Tuhoamista ei ole toteutettu
+         * @throws UnsupportedOperationException aina
+         * @see java.util.Iterator#remove()
+         */
+        @Override
+        public void remove() throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Me ei poisteta");
+        }
+    }
+
+
+    /**
+     * Palautetaan iteraattori profiileistaan.
+     * @return profiili iteraattori
+     */
+    @Override
+    public Iterator<Profiili> iterator() {
+        return new ProfiilitIterator();
+    }
+    
+    
+    /** 
+     * Palauttaa "taulukossa" hakuehtoon vastaavien profiilien viitteet 
+     * @param hakuehto hakuehto 
+     * @param k etsittävän kentän indeksi  
+     * @return tietorakenteen löytyneistä profiileista 
+     * @example 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     *   Profiilit profiilit = new Profiilit(); 
+     *   Profiili pro1= new Profiili(); pro1.parse("1|s1mple|1|3.09"); 
+     *   Profiili pro2 = new Profiili(); pro2.parse("2|allu|2|3.3"); 
+     *   Profiili pro4 = new Profiili(); pro4.parse("4|ropz|3|1.77"); 
+     *   Profiili pro5 = new Profiili(); pro5.parse("5|Jamppi|2|1.25"); 
+     *   profiilit.lisaa(pro1); profiilit.lisaa(pro2); profiilit.lisaa(pro4); profiilit.lisaa(pro5);
+     *   // TODO: toistaiseksi palauttaa kaikki profiilit
+     * </pre> 
+     */ 
+    @SuppressWarnings("unused")
+    public Collection<Profiili> etsi(String hakuehto, int k) { 
+        Collection<Profiili> loytyneet = new ArrayList<Profiili>(); 
+        for (Profiili profiili : this) { 
+            loytyneet.add(profiili);  
+        } 
+        return loytyneet; 
+    }
+    
+    
+    /**
+     * Profiilien testausta
      * @param args Ei käytössä
      */
     public static void main(String[] args) {
@@ -125,19 +313,15 @@ public class Profiilit {
         allu2.rekisteroi();
         allu2.taytaAlluTiedoilla();
         
-        try {
-            profiilit.lisaa(allu);
-            profiilit.lisaa(allu2);
+        profiilit.lisaa(allu);
+        profiilit.lisaa(allu2);
         
-            System.out.println("testejä");
+        System.out.println("testejä");
         
-            for (int i = 0; i < profiilit.getLkm(); i++) {
-                Profiili profiili = profiilit.anna(i);
-                System.out.println("Profiilin indeksi: " +  i);
-                profiili.tulosta(System.out);
-            }
-        } catch (SailoException ex) {
-            System.err.println(ex.getMessage());
+        for (int i = 0; i < profiilit.getLkm(); i++) {
+            Profiili profiili = profiilit.anna(i);
+            System.out.println("Profiilin indeksi: " +  i);
+            profiili.tulosta(System.out);
         }
     }
 }

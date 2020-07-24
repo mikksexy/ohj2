@@ -1,18 +1,19 @@
 package peliasetusrekisteri;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  * - huolehtii profiilit ja joukkueet -luokkien välisestä yhteistyöstä ja välittää näitä tietoja pyydettäessä
  * - lukee ja kirjoittaa rekisterin tiedostoon pyytämällä apua avustajiltaan
  * @author Sami
- * @version 10.7.2020
+ * @version 24.7.2020
  *
  */
 public class Rekisteri {
     
-    private final Profiilit profiilit = new Profiilit();
-    private final Joukkueet joukkueet = new Joukkueet();
+    private Profiilit profiilit = new Profiilit();
+    private Joukkueet joukkueet = new Joukkueet();
     
     /**
      * Lisätään uusi profiili rekisteriin
@@ -68,6 +69,18 @@ public class Rekisteri {
     public int poista(@SuppressWarnings("unused") int nro) {
         return 0;
     }
+    
+    
+    /** 
+     * Palauttaa "taulukossa" hakuehtoon vastaavien jäsenten viitteet 
+     * @param hakuehto hakuehto  
+     * @param k etsittävän kentän indeksi  
+     * @return tietorakenteen löytyneistä jäsenistä 
+     * @throws SailoException Jos jotakin menee väärin
+     */ 
+    public Collection<Profiili> etsi(String hakuehto, int k) throws SailoException { 
+        return profiilit.etsi(hakuehto, k); 
+    } 
     
     
     /**
@@ -128,7 +141,6 @@ public class Rekisteri {
      * Haetaan joukkueen profiilit
      * @param jou Joukkue jonka profiileja haetaan
      * @return Listan profiilin joukkueesta...
-     * TODO: uusi joukkue pitäisi paikata vanha joukkue
      * @example
      * <pre name="test">
      * #import java.util.*;
@@ -160,12 +172,50 @@ public class Rekisteri {
     
     /**
      * Lukee rekisterin tiedot tiedostosta
-     * @param nimi jota käyteään lukemisessa
      * @throws SailoException jos lukeminen epäonnistuu
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException 
+     * #import java.io.*;
+     * #import java.util.*;
+     * 
+     *  Rekisteri rekisteri = new Rekisteri();
+     *  
+     *  Profiili allu1 = new Profiili(); allu1.taytaAlluTiedoilla(); allu1.rekisteroi();
+     *  Profiili allu2 = new Profiili(); allu2.taytaAlluTiedoilla(); allu2.rekisteroi();
+     *  Joukkue ence1 = new Joukkue();
+     *  Joukkue ence2 = new Joukkue();
+     *   
+     *  File ftied = new File("profiilit.dat");
+     *  File fhtied = new File("joukkueet.dat"); 
+     *  ftied.delete();
+     *  fhtied.delete();
+     *  rekisteri.lueTiedostosta(); #THROWS SailoException
+     *  rekisteri.lisaa(allu1);
+     *  rekisteri.lisaa(allu2);
+     *  rekisteri.lisaa(ence1);
+     *  rekisteri.lisaa(ence2);
+     *  rekisteri.tallenna();
+     *  rekisteri = new Rekisteri();
+     *  rekisteri.lueTiedostosta();
+     *  Collection<Profiili> kaikki = rekisteri.etsi("",-1); 
+     *  Iterator<Profiili> it = kaikki.iterator();
+     *  it.next() === allu1;
+     *  it.next() === allu2;
+     *  it.hasNext() === false;
+     *  rekisteri.lisaa(allu2);
+     *  rekisteri.lisaa(ence2);
+     *  rekisteri.tallenna();
+     *  ftied.delete()  === true;
+     *  fhtied.delete() === true;
+     * </pre>
      */
-    public void lueTiedostosta(String nimi) throws SailoException {
-        profiilit.lueTiedostosta(nimi);
-        joukkueet.lueTiedostosta(nimi);
+    public void lueTiedostosta() throws SailoException {
+        profiilit = new Profiilit();
+        joukkueet = new Joukkueet();
+        
+        profiilit.lueTiedostosta();
+        joukkueet.lueTiedostosta();
     }
 
     
@@ -174,8 +224,19 @@ public class Rekisteri {
      * @throws SailoException jos tallentamisessa ongelmia
      */
     public void tallenna() throws SailoException {
-        profiilit.tallenna();
-        joukkueet.tallenna();
+        String virhe = "";
+        try {
+            profiilit.tallenna();
+        } catch (SailoException ex) {
+            virhe = ex.getMessage();
+        }
+
+        try {
+            joukkueet.tallenna();
+        } catch (SailoException ex) {
+            virhe += ex.getMessage();
+        }
+        if ( !"".equals(virhe) ) throw new SailoException(virhe);
     }
     
     

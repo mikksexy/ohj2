@@ -3,8 +3,10 @@ package fxPeliasetusrekisteri;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Font;
 import peliasetusrekisteri.Profiili;
 import peliasetusrekisteri.Rekisteri;
@@ -13,6 +15,7 @@ import peliasetusrekisteri.SailoException;
 
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.ResourceBundle;
 
 import fi.jyu.mit.fxgui.*;
@@ -20,19 +23,30 @@ import fi.jyu.mit.fxgui.*;
 /**
  * Luokka käyttöliittymän tapahtumien hoitamiseksi
  * @author Sami
- * @version 10.7.2020
+ * @version 24.7.2020
  *
  */
 public class PeliasetusrekisteriGUIController implements Initializable {
     
-    @FXML ListChooser<Profiili> chooserProfiilit;
+    @FXML private ListChooser<Profiili> chooserProfiilit;
     @FXML private ScrollPane panelProfiili;
-    
+    @FXML private ComboBoxChooser<String> cbKentat;
+    @FXML private TextField hakuehto;
+    @FXML private Label labelVirhe;
     
 
     @Override
     public void initialize(URL url, ResourceBundle bundle) {
         alusta();
+    }
+    
+    
+    /**
+     * Käsitellään hakuehto
+     */
+    @FXML private void handleHakuehto() {
+        if ( profiiliKohdalla != null )
+            hae(profiiliKohdalla.getTunnusNro());
     }
     
     
@@ -59,7 +73,6 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     @FXML void handleUusiProfiili() {
         uusiProfiili();
         uusiJoukkue();
-        //Dialogs.showMessageDialog("Ei osata vielä lisätä");
     }
     
     
@@ -68,7 +81,6 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      */
     @FXML void handleMuokkaa() {
         muokkaa();
-        //tallenna();
     }
     
     
@@ -92,7 +104,6 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      * Käsitellään ohjelman tietojen näyttäminen
      */
     @FXML private void handleTietoja() {
-        //Dialogs.showMessageDialog("Peliasetusrekisteri");
         ModalController.showModal(PeliasetusrekisteriGUIController.class.getResource("TietojaView.fxml"), "Tietoja", null, "");
     }
     
@@ -135,10 +146,50 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     
     
     /**
-     * Tietojen tallennus
+     * Tulostaa labelille virheen
+     * @param virhe Virhe joka tulostuu
      */
-    private void tallenna() {
-        Dialogs.showMessageDialog("Tallennetaan, mutta ei toimi vielä...");
+    private void naytaVirhe(String virhe) {
+        if ( virhe == null || virhe.isEmpty() ) {
+            labelVirhe.setText("");
+            labelVirhe.getStyleClass().removeAll("virhe");
+            return;
+        }
+        labelVirhe.setText(virhe);
+        labelVirhe.getStyleClass().add("virhe");
+    }
+
+    
+    /**
+     * Alustaa rekisterin lukemalla sen tiedostosta
+     * @return null jos onnistuu, muuten virhe tekstinä
+     */
+    protected String lueTiedosto() {
+        try {
+            rekisteri.lueTiedostosta();
+            hae(0);
+            return null;
+        } catch (SailoException e) {
+            hae(0);
+            String virhe = e.getMessage(); 
+            if ( virhe != null ) Dialogs.showMessageDialog(virhe);
+            return virhe;
+        }
+     }
+    
+    
+    /**
+     * Tietojen tallennus
+     * @return null jos onnistuu, muuten virhe tekstinä
+     */
+    private String tallenna() {
+        try {
+            rekisteri.tallenna();
+            return null;
+        } catch (SailoException ex) {
+            Dialogs.showMessageDialog("Tallennuksessa ongelmia! " + ex.getMessage());
+            return ex.getMessage();
+        }
     }
     
     
@@ -146,7 +197,6 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      * Uuden profiilin luominen
      */
     private void uusiProfiili() {
-        //ModalController.showModal(PeliasetusrekisteriGUIController.class.getResource("ProfiiliDialogView.fxml"), "Uusi profiili", null, "");
         Profiili uusi = new Profiili();
         uusi.rekisteroi();
         uusi.taytaAlluTiedoilla(); // TODO: korvaa oikealla dialogilla
@@ -177,14 +227,30 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      * @param pnro profiilinumero, jota haetaan
      */
     private void hae(int pnro) {
+        int k = cbKentat.getSelectionModel().getSelectedIndex();
+        String ehto = hakuehto.getText(); 
+        if (k > 0 || ehto.length() > 0)
+            naytaVirhe(String.format("Ei osata hakea (kenttä: %d, ehto: %s)", k, ehto));
+        else
+            naytaVirhe(null);
+        
         chooserProfiilit.clear();
         
         int index = 0;
-        for (int i = 0; i < rekisteri.getProfiileja(); i++) {
-            Profiili profiili = rekisteri.annaProfiili(i);
-            if (profiili.getTunnusNro() == pnro) index = i;
-            chooserProfiilit.add(profiili.getNimimerkki(), profiili);
+        Collection<Profiili> profiilit;
+        try {
+            profiilit = rekisteri.etsi(ehto, k);
+            int i = 0;
+            for (Profiili profiili : profiilit) {
+                profiili = rekisteri.annaProfiili(i);
+                if (profiili.getTunnusNro() == pnro) index = i;
+                chooserProfiilit.add(profiili.getNimimerkki(), profiili);
+                i++;
+            }
+        } catch (SailoException ex) {
+            Dialogs.showMessageDialog("Profiilin hakemisessa ongelmia! " + ex.getMessage());
         }
+        
         chooserProfiilit.setSelectedIndex(index);
     }
     
@@ -204,6 +270,16 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     public void setRekisteri(Rekisteri rekisteri) {
         this.rekisteri = rekisteri;
         naytaProfiili();
+    }
+    
+    
+    /**
+     * Tarkistetaan onko tallennus tehty
+     * @return true jos saa sulkea sovelluksen, false jos ei
+     */
+    public boolean voikoSulkea() {
+        tallenna();
+        return true;
     }
     
     

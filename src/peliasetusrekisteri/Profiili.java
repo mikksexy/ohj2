@@ -3,6 +3,8 @@ package peliasetusrekisteri;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import fi.jyu.mit.ohj2.Mjonot;
+
 /**
  * - tiet‰‰ profiilin kent‰t (nimimerkki, joukkue jne)
  * - osaa tarkistaa tietyn kent‰n oikeellisuuden
@@ -11,7 +13,7 @@ import java.io.PrintStream;
  * - osaa laittaa merkkijonon i:neksi kent‰ksi
  * 
  * @author Sami
- * @version 10.7.2020
+ * @version 24.7.2020
  *
  */
 public class Profiili {
@@ -107,6 +109,18 @@ public class Profiili {
     
     
     /**
+     * Asettaa tunnusnumeron ja samalla varmistaa ett‰
+     * seuraava numero on aina suurempi kuin t‰h‰n menness‰ suurin.
+     * @param nr asetettava tunnusnumero
+     */
+    private void setTunnusNro(int nr) {
+        tunnusNro = nr;
+        if (tunnusNro >= seuraavaNro) seuraavaNro = tunnusNro + 1;
+    }
+
+    
+    
+    /**
      * Palauttaa profiilin nimimerkin
      * @return profiilin nimimerkin
      */
@@ -130,6 +144,76 @@ public class Profiili {
      */
     public int getJoukkue() {
         return joukkue;
+    }
+    
+    
+    /**
+     * Palauttaa profiilin tiedot merkkijonona jonka voi tallentaa tiedostoon.
+     * @return profiili tolppaeroteltuna merkkijonona 
+     * @example
+     * <pre name="test">
+     *   Profiili profiili = new Profiili();
+     *   profiili.parse("   2  |  allu | 2");
+     *   profiili.toString().startsWith("2|allu|2|") === true;
+     * </pre>  
+     */
+    @Override
+    public String toString() {
+        return "" +
+                getTunnusNro() + "|" +
+                getNimimerkki() + "|" +
+                getJoukkue() + "|" +
+                hiirenHerkkyys + "|" +
+                dpi + "|" +
+                naytonTarkkuus + "|" +
+                kuvasuhde + "|" +
+                skaalaus + "|" +
+                virkistystaajuus;
+    }
+    
+    
+    /**
+     * Selvit‰‰ profiilin tiedot | erotellusta merkkijonosta
+     * Pit‰‰ huolen ett‰ seuraavaNro on suurempi kuin tuleva tunnusNro.
+     * @param rivi josta profiilin tiedot otetaan
+     * @example
+     * <pre name="test">
+     *   Profiili profiili = new Profiili();
+     *   profiili.parse("   2  |  allu | 2");
+     *   profiili.getTunnusNro() === 2;
+     *   profiili.toString().startsWith("2|allu|2|") === true;
+     *
+     *   profiili.rekisteroi();
+     *   int n = profiili.getTunnusNro();
+     *   profiili.parse(""+(n+20));
+     *   profiili.rekisteroi();
+     *   profiili.getTunnusNro() === n+20+1;  
+     * </pre>
+     */
+    public void parse(String rivi) {
+        StringBuilder sb = new StringBuilder(rivi);
+        setTunnusNro(Mjonot.erota(sb, '|', getTunnusNro()));
+        nimimerkki = Mjonot.erota(sb, '|', getNimimerkki());
+        joukkue = Mjonot.erota(sb, '|', getJoukkue());
+        hiirenHerkkyys = Mjonot.erota(sb, '|', hiirenHerkkyys);
+        dpi = Mjonot.erota(sb, '|', dpi);
+        naytonTarkkuus = Mjonot.erota(sb, '|', naytonTarkkuus);
+        kuvasuhde = Mjonot.erota(sb, '|', kuvasuhde);
+        skaalaus = Mjonot.erota(sb, '|', skaalaus);
+        virkistystaajuus = Mjonot.erota(sb,  '|', virkistystaajuus);
+    }
+    
+    
+    @Override
+    public boolean equals(Object profiili) {
+        if ( profiili == null ) return false;
+        return this.toString().equals(profiili.toString());
+    }
+
+
+    @Override
+    public int hashCode() {
+        return tunnusNro;
     }
     
     
