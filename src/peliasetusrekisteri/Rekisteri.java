@@ -1,6 +1,9 @@
 package peliasetusrekisteri;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 
 /**
  * - huolehtii profiilit ja joukkueet -luokkien välisestä yhteistyöstä ja välittää näitä tietoja pyydettäessä
@@ -191,7 +194,7 @@ public class Rekisteri {
     
     /**
      * Haetaan joukkueen profiilit
-     * @param tunnusNro Joukkue jonka profiileja haetaan
+     * @param ehto Joukkue jonka profiileja haetaan
      * @return Listan profiilin joukkueesta...
      * @throws SailoException 
      * @example
@@ -208,8 +211,16 @@ public class Rekisteri {
      *
      * </pre>
      */
-    public Collection<Profiili> etsi(int tunnusNro) throws SailoException {
-        return profiilit.annaProfiilit(tunnusNro);
+    public Collection<Profiili> etsi(String ehto) throws SailoException {
+        List<Profiili> loytyneet = new ArrayList<Profiili>();
+        List<Joukkue> jou = joukkueet.etsi(ehto);
+        for ( Joukkue joukkue : jou ) {
+            Collection<Profiili> prof = profiilit.annaProfiilit(joukkue.getTunnusNro());
+            for ( Profiili pro : prof ) {
+                loytyneet.add(pro);
+            }
+        }
+        return loytyneet;
     }
     
     

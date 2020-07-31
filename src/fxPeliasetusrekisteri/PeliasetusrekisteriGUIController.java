@@ -248,13 +248,9 @@ public class PeliasetusrekisteriGUIController implements Initializable {
         
         int index = 0;
         Collection<Profiili> profiilit;
-        if ( k == 1 ) {
-            Joukkue jou = rekisteri.annaJoukkue(ehto);
-            int tunnusNro = jou.getTunnusNro();
-            ehto = "" + tunnusNro;
-            }
         try {
-            profiilit = rekisteri.etsi(ehto, k);
+            if ( k == 1 ) profiilit = rekisteri.etsi(ehto);
+            else profiilit = rekisteri.etsi(ehto, k);
             int i = 0;
             for (Profiili profiili : profiilit) {
                 if (profiili.getTunnusNro() == pnro) index = i;

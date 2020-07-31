@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import fi.jyu.mit.ohj2.WildChars;
+
 /**
  * - pit‰‰ yll‰ varsinaista joukkuerekisteri‰ eli osaa lis‰t‰ ja poistaa joukkueen
  * - lukee ja kirjoittaa joukkueet tiedostoon
@@ -253,6 +255,20 @@ public class Joukkueet implements Iterable<Joukkue> {
                 joukkue = jou;
             }
             return joukkue;
+    }
+    
+    
+    /**
+     * @param hakuehto
+     * @return asd
+     */
+    public List<Joukkue> etsi(String hakuehto) {
+        List<Joukkue> loytyneet = new ArrayList<Joukkue>();
+
+        for (Joukkue joukkue : this) { 
+            if ( WildChars.onkoSamat(joukkue.getNimi(), hakuehto) )loytyneet.add(joukkue);  
+        };
+        return loytyneet; 
     }
 
     
