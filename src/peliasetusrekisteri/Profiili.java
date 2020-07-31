@@ -2,6 +2,7 @@ package peliasetusrekisteri;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Comparator;
 
 import fi.jyu.mit.ohj2.Mjonot;
 
@@ -13,7 +14,7 @@ import fi.jyu.mit.ohj2.Mjonot;
  * - osaa laittaa merkkijonon i:neksi kentäksi
  * 
  * @author Sami
- * @version 24.7.2020
+ * @version 31.7.2020
  *
  */
 public class Profiili implements Cloneable{
@@ -31,9 +32,51 @@ public class Profiili implements Cloneable{
     private static int seuraavaNro      = 1;
     
     
+    /** 
+     * Jäsenten vertailija 
+     */ 
+    public static class Vertailija implements Comparator<Profiili> { 
+        private int k;  
+         
+        
+        /**
+         * @param k monenneko kentän sisältöä verrataan
+         */
+        public Vertailija(int k) { 
+            this.k = k; 
+        } 
+         
+        @Override 
+        public int compare(Profiili profiili1, Profiili profiili2) { 
+            return profiili1.getAvain(k).compareToIgnoreCase(profiili2.getAvain(k)); 
+        } 
+    }
+    
+    
+    /** 
+     * Antaa k:n kentän sisällön merkkijonona 
+     * @param k monenenko kentän sisältö palautetaan 
+     * @return kentän sisältö merkkijonona 
+     */ 
+    public String getAvain(int k) { 
+        switch ( k ) { 
+        //case 0: return "" + tunnusNro; 
+        case 0: return "" + nimimerkki.toUpperCase(); 
+        case 1: return "" + joukkue; 
+        case 2: return "" + hiirenHerkkyys; 
+        case 3: return "" + dpi; 
+        case 4: return "" + naytonTarkkuus; 
+        case 5: return "" + kuvasuhde; 
+        case 6: return "" + skaalaus; 
+        case 7: return "" + virkistystaajuus; 
+        case 8: return "" + edpi;
+        default: return ":D"; 
+        } 
+    } 
+
+    
     /**
      * Apumetodi, jolla saadaan täytettyä testiarvot profiilille
-     * TODO: poista kun toimii
      */
     public void taytaAlluTiedoilla() {
         nimimerkki = "allu" + rand(1000, 9999);

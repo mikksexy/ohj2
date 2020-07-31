@@ -11,7 +11,7 @@ import fi.jyu.mit.ohj2.Mjonot;
  * - osaa antaa merkkijonona i:n kentän tiedot
  * - osaa laittaa merkkijonon i:neksi kentäksi
  * @author Sami
- * @version 24.7.2020
+ * @version 31.7.2020
  *
  */
 public class Joukkue {
@@ -110,6 +110,17 @@ public class Joukkue {
      * @return Palauttaa joukkueen nimen
      */
     public String getNimi() {
+        return nimi;
+    }
+    
+    
+    /**
+     * TODO:;
+     * @param nimi
+     * @return Palauttaa nimen
+     */
+    public String setNimi(String nimi) {
+        this.nimi = nimi;
         return nimi;
     }
     

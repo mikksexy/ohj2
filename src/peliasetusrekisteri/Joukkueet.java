@@ -13,11 +13,11 @@ import java.util.*;
  * - lukee ja kirjoittaa joukkueet tiedostoon
  * - osaa etsiä ja lajitella
  * @author Sami
- * @version 24.7.2020
+ * @version 31.7.2020
  *
  */
 public class Joukkueet implements Iterable<Joukkue> {
-    private final Collection<Joukkue> alkiot = new ArrayList<Joukkue>();
+    private final List<Joukkue> alkiot = new ArrayList<Joukkue>();
     private boolean muutettu = false;
 
     
@@ -36,6 +36,58 @@ public class Joukkueet implements Iterable<Joukkue> {
     public void lisaa(Joukkue jou) {
         alkiot.add(jou);
         muutettu = true;
+    }
+    
+    
+    /**
+     * @param joukkue joka halutaan lisätä
+     * @return joukkueen tunnusnumeron
+     */
+    public int korvaaTaiLisaa(Joukkue joukkue) {
+        if ( onkoMuita(joukkue.getNimi()) == 0) lisaa(joukkue);
+        return joukkue.getTunnusNro();
+    }
+    
+    
+    /**
+     * @param nimi
+     * @return Jos ei ole muita palauttaa 0, muuten palauttaa joukkueen numeron
+     */
+    public int onkoMuita(String nimi) {
+        for ( Joukkue jou : alkiot ) {
+            if ( jou.getNimi().equalsIgnoreCase(nimi) ) {
+                return jou.getTunnusNro();
+            }
+        }
+        return 0;
+    }
+    
+    
+    /**
+     * @param nimi
+     * @return Jos ei ole muita palauttaa 0, muuten palauttaa joukkueen profiilien määrän
+     */
+    public int onkoMuita2(String nimi) {
+        int lkm = 0;
+        for ( Joukkue jou : alkiot ) {
+            if ( jou.getNimi().equalsIgnoreCase(nimi) ) {
+                lkm++;
+            }
+        }
+        return lkm;
+    }
+    
+    
+    /**
+     * TODO: asd
+     * @param joukkue poistettava joukkue
+     * @return Palauttaa tosi, jos poistettava joukkue löytyi
+     */
+    public boolean poista(Joukkue joukkue) {
+        if ( onkoMuita2(joukkue.getNimi()) > 1 ) return false;
+        boolean ret = alkiot.remove(joukkue);
+        if ( ret ) muutettu = true;
+        return ret;
     }
     
     
@@ -118,6 +170,20 @@ public class Joukkueet implements Iterable<Joukkue> {
     public int getLkm() {
         return alkiot.size();
     }
+    
+    
+    /**
+     * @param roskat
+     */
+    public void roskat(List<Integer> roskat) {
+        for ( Iterator<Joukkue> jou = alkiot.iterator(); jou.hasNext();) {
+            boolean roskaa = true;
+            for ( Integer roska : roskat ) {
+                if ( jou.next().getTunnusNro() == roska.intValue() ) roskaa = false; 
+            }
+            if ( roskaa ) poista(jou.next());
+        }
+    }
 
 
     /**
@@ -174,6 +240,20 @@ public class Joukkueet implements Iterable<Joukkue> {
             }
             return joukkue;
     }
+    
+    
+    /**
+     * @param nimi
+     * @return Palauttaa joukkueen
+     */
+    public Joukkue annaJoukkue(String nimi) {
+        Joukkue joukkue = new Joukkue();
+        for (Joukkue jou : this)
+            if (jou.getNimi() == nimi) {
+                joukkue = jou;
+            }
+            return joukkue;
+    }
 
     
     /**
@@ -184,6 +264,7 @@ public class Joukkueet implements Iterable<Joukkue> {
     public int annaJnro(Joukkue jou) {
         return jou.getTunnusNro();
     }
+    
     
     /**
      * Testiohjelma luokalle

@@ -11,7 +11,7 @@ import javafx.fxml.FXMLLoader;
 /**
  * Ohjelmassa pidet‰‰n kirjaa profiilien peliasetuksista
  * @author Sami
- * @version 24.7.2020
+ * @version 31.7.2020
  */
 public class PeliasetusrekisteriMain extends Application {
     @Override

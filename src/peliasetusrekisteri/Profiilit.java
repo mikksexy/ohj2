@@ -8,16 +8,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import fi.jyu.mit.ohj2.WildChars;
 
 /**
  * - pit‰‰ yll‰ varsinaista profiilirekisteri‰ eli osaa lis‰t‰ ja poistaa profiilin
  * - lukee ja kirjoittaa profiilin tiedostoon
  * - osaa etsi‰ ja lajitella
  * @author Sami
- * @version 24.7.2020
+ * @version 31.7.2020
  *
  */
 public class Profiilit implements Iterable<Profiili>{
@@ -225,10 +228,24 @@ public class Profiilit implements Iterable<Profiili>{
      * @param tunnusNro joukkueen tunnusnumero
      * @return Lista profiileista, jotka kuuluvat joukkueeseen
      */
-    public List<Profiili> annaProfiilit(int tunnusNro) {
+    public Collection<Profiili> annaProfiilit(int tunnusNro) {
         List<Profiili> loydetyt = new ArrayList<Profiili>();
-        for (Profiili pro : this)
+        for (Profiili pro : this) {
             if (pro.getJoukkue() == tunnusNro) loydetyt.add(pro);
+        }
+        Collection<Profiili> loydot = loydetyt;
+        return loydot;
+    }
+    
+    
+    /**
+     * @return asd
+     */
+    public List<Integer> roskat() {
+        List<Integer> loydetyt = new ArrayList<Integer>();
+        for (Profiili pro : this) {
+            if (pro.getJoukkue() != 0) loydetyt.add(pro.getJoukkue());
+        }
         return loydetyt;
     }
     
@@ -341,12 +358,23 @@ public class Profiilit implements Iterable<Profiili>{
      *   // TODO: toistaiseksi palauttaa kaikki profiilit
      * </pre> 
      */ 
-    @SuppressWarnings("unused")
-    public Collection<Profiili> etsi(String hakuehto, int k) { 
-        Collection<Profiili> loytyneet = new ArrayList<Profiili>(); 
+    public Collection<Profiili> etsi(String hakuehto, int k) {
+        String ehto = "*";
+        if ( hakuehto != null && hakuehto.length() > 0 ) ehto = hakuehto;
+        int hk = k;
+        if ( hk < 0 ) hk = 0;
+        List<Profiili> loytyneet = new ArrayList<Profiili>();
+        if ( hk == 1 ) {
+            int tunnusNro = Integer.parseInt(hakuehto);
+            for (Profiili pro : this) {
+                if (pro.getJoukkue() == tunnusNro) loytyneet.add(pro);
+            }
+            return loytyneet;
+        }
         for (Profiili profiili : this) { 
-            loytyneet.add(profiili);  
-        } 
+            if ( WildChars.onkoSamat(profiili.getAvain(hk), ehto) )loytyneet.add(profiili);  
+        }
+        Collections.sort(loytyneet, new Profiili.Vertailija(hk));
         return loytyneet; 
     }
     

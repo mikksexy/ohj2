@@ -1,13 +1,12 @@
 package peliasetusrekisteri;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * - huolehtii profiilit ja joukkueet -luokkien välisestä yhteistyöstä ja välittää näitä tietoja pyydettäessä
  * - lukee ja kirjoittaa rekisterin tiedostoon pyytämällä apua avustajiltaan
  * @author Sami
- * @version 24.7.2020
+ * @version 31.7.2020
  *
  */
 public class Rekisteri {
@@ -49,13 +48,42 @@ public class Rekisteri {
     public void korvaaTaiLisaa(Profiili profiili) {
         profiilit.korvaaTaiLisaa(profiili);
     }
+    
+    
+    /**
+     * TODO:
+     * @param joukkue Joukkue joka halutaan lisätä
+     * @return Palauttaa joukkueen tunnusnumeron
+     */
+    public int korvaaTaiLisaa(Joukkue joukkue) {
+        return joukkueet.korvaaTaiLisaa(joukkue);
+    }
+    
+    
+    /**
+     * TODO:
+     * @param nimi
+     * @return Palauttaa 0, jos ei ole muita, muuten palauttaa joukkueen numeron
+     */
+    public int onkoMuita(String nimi) {
+        return joukkueet.onkoMuita(nimi);
+    }
+    
+    /**
+     * TODO:
+     * @param nimi
+     * @return Palauttaa 0, jos ei ole muita, muuten palauttaa joukkueen numeron
+     */
+    public int onkoMuita2(String nimi) {
+        return joukkueet.onkoMuita2(nimi);
+    }
 
     /**
      * Listään uusi joukkue rekisteriin
-     * @param jou lisättävä joukkue
+     * @param joukkue lisättävä joukkue
      */
-    public void lisaa(Joukkue jou) {
-        joukkueet.lisaa(jou);
+    public void lisaa(Joukkue joukkue) {
+        joukkueet.lisaa(joukkue);
     }
 
     /**
@@ -76,8 +104,17 @@ public class Rekisteri {
     public int poista(Profiili profiili) {
         if ( profiili == null ) return 0;
         int ret = profiilit.poista(profiili.getTunnusNro()); 
-        //joukkueet.poista(profiili.getJoukkue()); 
+        joukkueet.poista(annaJoukkue(profiili.getJoukkue())); 
         return ret; 
+    }
+    
+    
+    /**
+     * TODO: testit
+     * @param joukkue Joukkue, joka halutaan poistaa
+     */
+    public void poista(Joukkue joukkue) {
+        joukkueet.poista(joukkue);
     }
 
 
@@ -122,11 +159,11 @@ public class Rekisteri {
 
     /**
      * Haetaan profiilin joukkue
-     * @param profiili
+     * @param jnro
      * @return Listan profiilin joukkueesta...
      * TODO: uusi joukkue pitäisi paikata vanha joukkue
-     * @example
-     * <pre name="test">
+     * 
+     *
      * #import java.util.*;
      * 
      * Rekisteri rekisteri = new Rekisteri();
@@ -138,14 +175,25 @@ public class Rekisteri {
      * rekisteri.annaJoukkue(allu1) === ence1;
      * </pre>
      */
-    public Joukkue annaJoukkue(Profiili profiili) {
-        return joukkueet.annaJoukkue(profiili.getJoukkue());
+    public Joukkue annaJoukkue(int jnro) {
+        return joukkueet.annaJoukkue(jnro);
+    }
+    
+    
+    /**
+     * @param nimi
+     * @return Palauttaa halutun nimisen joukkueen, jos löytyy
+     */
+    public Joukkue annaJoukkue(String nimi) {
+        return joukkueet.annaJoukkue(nimi);
     }
 
+    
     /**
      * Haetaan joukkueen profiilit
-     * @param jou Joukkue jonka profiileja haetaan
+     * @param tunnusNro Joukkue jonka profiileja haetaan
      * @return Listan profiilin joukkueesta...
+     * @throws SailoException 
      * @example
      * <pre name="test">
      * #import java.util.*;
@@ -158,21 +206,20 @@ public class Rekisteri {
      * rekisteri.setJoukkue(allu1, ence1);
      * rekisteri.setJoukkue(allu2, ence1);
      *
-     * List<Profiili> loytyneet;
-     * loytyneet = rekisteri.annaProfiilit(ence2);
-     * loytyneet.size() === 0;
-     * rekisteri.setJoukkue(allu3, ence2);
-     * loytyneet = rekisteri.annaProfiilit(ence2);
-     * loytyneet.size() === 1;
-     * loytyneet.get(0) == allu3 === true;
-     * loytyneet = rekisteri.annaProfiilit(ence1);
-     * loytyneet.size() === 2;
-     * loytyneet.get(0) == allu1 === true;
      * </pre>
      */
-    public List<Profiili> annaProfiilit(Joukkue jou) {
-        return profiilit.annaProfiilit(jou.getTunnusNro());
+    public Collection<Profiili> etsi(int tunnusNro) throws SailoException {
+        return profiilit.annaProfiilit(tunnusNro);
     }
+    
+    
+    /**
+     * TODO:
+     */
+    public void roskat() {
+        if ( joukkueet.getLkm() > profiilit.getLkm() ) joukkueet.roskat(profiilit.roskat());
+    }
+
 
     /**
      * Lukee rekisterin tiedot tiedostosta
@@ -269,7 +316,7 @@ public class Rekisteri {
         rekisteri.lisaa(allu1);
         rekisteri.lisaa(allu2);
 
-        rekisteri.annaJoukkue(allu1).tulosta(System.out);
+        rekisteri.annaJoukkue(allu1.getJoukkue()).tulosta(System.out);
         Joukkue ence1 = new Joukkue();
         ence1.taytaJoukkueTiedoilla();
         rekisteri.lisaa(ence1);

@@ -25,7 +25,7 @@ import fi.jyu.mit.fxgui.*;
 /**
  * Luokka käyttöliittymän tapahtumien hoitamiseksi
  * @author Sami
- * @version 30.7.2020
+ * @version 31.7.2020
  *
  */
 public class PeliasetusrekisteriGUIController implements Initializable {
@@ -57,8 +57,7 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      * Käsitellään hakuehto
      */
     @FXML private void handleHakuehto() {
-        if ( profiiliKohdalla != null )
-            hae(profiiliKohdalla.getTunnusNro());
+        hae(0);
     }
     
     
@@ -84,7 +83,6 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      */
     @FXML void handleUusiProfiili() {
         uusiProfiili();
-        uusiJoukkue();
     }
     
     
@@ -152,7 +150,7 @@ public class PeliasetusrekisteriGUIController implements Initializable {
         edits[8].setText(String.format("%.1f", profiiliKohdalla.getEdpi()));
         edits[9].setText(String.format("%.1f",rekisteri.edpiKa()));
         
-        ProfiiliDialogController.naytaProfiili(edits, profiiliKohdalla);
+        ProfiiliDialogController.naytaProfiili(edits, profiiliKohdalla, rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()));
         
         
     }
@@ -211,23 +209,11 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      */
     private void uusiProfiili() {
         Profiili uusi = new Profiili();
-        uusi = ProfiiliDialogController.kysyProfiili(null, uusi);
+        uusi = ProfiiliDialogController.kysyProfiili(null, uusi, rekisteri, new Joukkue());
         if ( uusi == null ) return;
         uusi.rekisteroi();
         rekisteri.lisaa(uusi);
         hae(uusi.getTunnusNro());
-    }
-    
-    
-    /**
-     * Uuden joukkueen luominen
-     */
-    public void uusiJoukkue() {
-        Joukkue jou = new Joukkue();
-        jou.rekisteroi();
-        jou.taytaJoukkueTiedoilla();
-        rekisteri.lisaa(jou);
-        hae(profiiliKohdalla.getTunnusNro());
     }
     
     
@@ -245,20 +231,28 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     
     /**
      * Haetaan profiili
-     * @param pnro profiilinumero, jota haetaan
+     * @param pnr profiilinumero, jota haetaan
      */
-    private void hae(int pnro) {
+    private void hae(int pnr) {
+        int pnro = pnr;
+        if ( pnro <= 0 ) {
+            Profiili kohdalla = profiiliKohdalla;
+            if ( kohdalla != null ) pnro = kohdalla.getTunnusNro();
+        }
+        
         int k = cbKentat.getSelectionModel().getSelectedIndex();
         String ehto = hakuehto.getText(); 
-        if (k > 0 || ehto.length() > 0)
-            naytaVirhe(String.format("Ei osata hakea (kenttä: %d, ehto: %s)", k, ehto));
-        else
-            naytaVirhe(null);
+        if (ehto.indexOf('*') < 0) ehto = "*" + ehto + "*";
         
         chooserProfiilit.clear();
         
         int index = 0;
         Collection<Profiili> profiilit;
+        if ( k == 1 ) {
+            Joukkue jou = rekisteri.annaJoukkue(ehto);
+            int tunnusNro = jou.getTunnusNro();
+            ehto = "" + tunnusNro;
+            }
         try {
             profiilit = rekisteri.etsi(ehto, k);
             int i = 0;
@@ -271,7 +265,8 @@ public class PeliasetusrekisteriGUIController implements Initializable {
             Dialogs.showMessageDialog("Profiilin hakemisessa ongelmia! " + ex.getMessage());
         }
         
-        chooserProfiilit.getSelectionModel().select(index);
+        chooserProfiilit.setSelectedIndex(index);
+        //chooserProfiilit.getSelectionModel().select(index);
     }
     
     
@@ -282,7 +277,7 @@ public class PeliasetusrekisteriGUIController implements Initializable {
         if ( profiiliKohdalla == null ) return; 
             try { 
                 Profiili profiili; 
-                profiili = ProfiiliDialogController.kysyProfiili(null, profiiliKohdalla.clone()); 
+                profiili = ProfiiliDialogController.kysyProfiili(null, profiiliKohdalla.clone(), rekisteri, rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue())); 
                 if ( profiili == null ) return; 
                 rekisteri.korvaaTaiLisaa(profiili); 
                 hae(profiili.getTunnusNro()); 
@@ -337,7 +332,7 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      */
     public void tulosta(PrintStream os, final Profiili profiili) {
         profiili.tulosta(os);
-        Joukkue joukkue = rekisteri.annaJoukkue(profiili);
+        Joukkue joukkue = rekisteri.annaJoukkue(profiili.getJoukkue());
         joukkue.tulosta(os);
     }
     
