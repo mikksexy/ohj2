@@ -51,7 +51,7 @@ public class Profiilit implements Iterable<Profiili>{
      */
     public void lisaa(Profiili profiili) {
         if (lkm >= alkiot.length) {
-            Profiili[] uusi = new Profiili[lkm + 5];
+            Profiili[] uusi = new Profiili[lkm + 10];
             for ( int i = 0; i < lkm; i++) {
                 uusi[i] = alkiot[i];
             }
@@ -60,6 +60,25 @@ public class Profiilit implements Iterable<Profiili>{
         alkiot[lkm] = profiili;
         lkm++;
         muutettu = true;
+    }
+    
+    
+    /**
+     * Korvaa profiilin tietorakenteessa. Tarkastetaan löytyykö profiili jo,
+     * jos ei niin lisätään uutena profiilina
+     * @param profiili
+     * TODO: testit
+     */
+    public void korvaaTaiLisaa(Profiili profiili) {
+        int id = profiili.getTunnusNro();
+        for ( int i = 0; i < lkm; i++ ) {
+            if ( alkiot[i].getTunnusNro() == id ) {
+                alkiot[i] = profiili;
+                muutettu = true;
+                return;
+            }
+        }
+        lisaa(profiili);
     }
     
     
@@ -74,6 +93,37 @@ public class Profiilit implements Iterable<Profiili>{
             throw new IndexOutOfBoundsException("Laiton indeksi: " + i);
         return alkiot[i];
     }
+    
+    
+    /** 
+     * Poistaa jäsenen jolla on valittu tunnusnumero  
+     * @param id poistettavan jäsenen tunnusnumero 
+     * @return 1 jos poistettiin, 0 jos ei löydy 
+     * @example 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Profiilit profiilit = new Profiilit(); 
+     * Profiili allu1 = new Profiili(), allu2 = new Profiili(), allu3 = new Profiili(); 
+     * allu1.rekisteroi(); allu2.rekisteroi(); allu3.rekisteroi(); 
+     * int id1 = allu1.getTunnusNro(); 
+     * profiilit.lisaa(allu1); profiilit.lisaa(allu2); profiilit.lisaa(allu3); 
+     * profiilit.poista(id1+1) === 1; 
+     * profiilit.annaId(id1+1) === null; profiilit.getLkm() === 2; 
+     * profiilit.poista(id1) === 1; profiilit.getLkm() === 1; 
+     * profiilit.poista(id1+3) === 0; profiilit.getLkm() === 1; 
+     * </pre> 
+     *  
+     */ 
+    public int poista(int id) { 
+        int ind = etsiId(id);
+        if (ind < 0) return 0;
+        lkm--;
+        for (int i = ind; i < lkm; i++)
+            alkiot[i] = alkiot[i + 1];
+        alkiot[lkm] = null;
+        muutettu = true;
+        return 1;
+    } 
     
     
     /**
@@ -165,8 +215,8 @@ public class Profiilit implements Iterable<Profiili>{
      * @param pro profiili, jolle joukkuenumero asetetaan
      * @param jnro joukkueen tunnusnumero
      */
-    public void asetaJoukkue(Profiili pro, int jnro) {
-        pro.asetaJoukkue(jnro);
+    public void setJoukkue(Profiili pro, int jnro) {
+        pro.setJoukkue(jnro);
     }
     
     
@@ -298,6 +348,41 @@ public class Profiilit implements Iterable<Profiili>{
             loytyneet.add(profiili);  
         } 
         return loytyneet; 
+    }
+    
+    
+    /** 
+     * Etsii profiilin id:n perusteella 
+     * @param id tunnusnumero, jonka mukaan etsitään 
+     * @return löytyneen profiilin indeksi tai -1 jos ei löydy 
+     * <pre name="test"> 
+     * #THROWS SailoException  
+     * Profiilit profiilit = new Profiilit(); 
+     * Profiili allu1 = new Profiili(), allu2 = new Profiili(), allu3 = new Profiili(); 
+     * allu1.rekisteroi(); allu2.rekisteroi(); allu3.rekisteroi(); 
+     * int id1 = allu1.getTunnusNro(); 
+     * profiilit.lisaa(allu1); profiilit.lisaa(allu2); profiilit.lisaa(allu3); 
+     * profiilit.etsiId(id1+1) === 1; 
+     * profiilit.etsiId(id1+2) === 2; 
+     * </pre> 
+     */ 
+    public int etsiId(int id) { 
+        for (int i = 0; i < lkm; i++) 
+            if (id == alkiot[i].getTunnusNro()) return i; 
+        return -1; 
+    }
+    
+    
+    /**
+     * Laskee kaikkien profiilien eDPI:n keskiarvon
+     * @return Palauttaa eDPI keskiarvon
+     */
+    public double edpiKa() {
+        double ka = 0;
+        for (Profiili profiili : this) {
+            ka += profiili.getEdpi();
+        }
+        return (ka / lkm);
     }
     
     

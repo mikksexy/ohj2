@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="320.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxPeliasetusrekisteri.PeliasetusrekisteriGUIController">
+<BorderPane prefHeight="380.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxPeliasetusrekisteri.PeliasetusrekisteriGUIController">
    <bottom>
       <HBox spacing="10.0" BorderPane.alignment="CENTER">
          <children>
@@ -96,8 +96,8 @@
                <content>
                   <GridPane hgap="10.0">
                     <columnConstraints>
-                      <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="NEVER" minWidth="10.0" />
-                      <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" minWidth="10.0" />
+                      <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="NEVER" maxWidth="129.0" minWidth="10.0" prefWidth="113.0" />
+                      <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="218.0" minWidth="10.0" prefWidth="185.0" />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
@@ -108,24 +108,30 @@
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
                         <Label text="nimimerkki" />
-                        <TextField text="allu" GridPane.columnIndex="1" />
+                        <TextField fx:id="editNimi" editable="false" text="allu" GridPane.columnIndex="1" />
                         <Label text="joukkue" GridPane.rowIndex="1" />
-                        <TextField text="ENCE" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="editJoukkue" editable="false" text="ENCE" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="hiiren herkkyys" GridPane.rowIndex="2" />
-                        <TextField text="3.3" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <TextField fx:id="editHerkkyys" editable="false" text="3.3" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label text="DPI" GridPane.rowIndex="3" />
-                        <TextField text="400" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <TextField fx:id="editDPI" editable="false" text="400" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Label text="näytön tarkkuus" GridPane.rowIndex="4" />
-                        <TextField text="1024x768" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <TextField fx:id="editTarkkuus" editable="false" text="1024x768" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                         <Label text="kuvasuhde" GridPane.rowIndex="5" />
-                        <TextField text="4:3" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <TextField fx:id="editKuvasuhde" editable="false" text="4:3" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                         <Label text="skaalaus" GridPane.rowIndex="6" />
-                        <TextField text="black bars" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                        <TextField fx:id="editSkaalaus" editable="false" text="black bars" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                         <Label text="virkistystaajuus" GridPane.rowIndex="7" />
-                        <TextField text="144" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <TextField fx:id="editTaajuus" editable="false" text="144" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <Label text="eDPI" GridPane.rowIndex="8" />
+                        <TextField fx:id="editEdpi" editable="false" text="1260" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                        <Label text="eDPI keskiarvo" GridPane.rowIndex="9" />
+                        <TextField fx:id="editEdpiKa" editable="false" text="1203" GridPane.columnIndex="1" GridPane.rowIndex="9" />
                      </children>
                      <padding>
                         <Insets left="10.0" right="10.0" top="10.0" />
@@ -138,7 +144,7 @@
             <Label text="Profiilin tiedot" BorderPane.alignment="CENTER" />
          </top>
          <bottom>
-         	<Label fx:id="labelVirhe" alignment="CENTER" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER" />
+         	<Label fx:id="labelVirhe" alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="330.0" BorderPane.alignment="CENTER" />
          </bottom>
          
       </BorderPane>

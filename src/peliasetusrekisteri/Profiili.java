@@ -16,7 +16,7 @@ import fi.jyu.mit.ohj2.Mjonot;
  * @version 24.7.2020
  *
  */
-public class Profiili {
+public class Profiili implements Cloneable{
     private int     tunnusNro;
     private int     joukkue             = 0;
     private String  nimimerkki          = "";
@@ -26,6 +26,7 @@ public class Profiili {
     private String  kuvasuhde           = "";
     private String  skaalaus            = "";
     private int     virkistystaajuus    = 0;
+    private double  edpi                = 0.0;
     
     private static int seuraavaNro      = 1;
     
@@ -42,9 +43,27 @@ public class Profiili {
         kuvasuhde = "4:3";
         skaalaus = "black bars";
         virkistystaajuus = 144;
+        setEdpi();
     }
     
     
+    /**
+     * Laskee profiilin eDPI arvon hiiren herkkyydestä ja dpi:stä
+     */
+    public void setEdpi() {
+        edpi = hiirenHerkkyys * dpi;
+    }
+    
+    
+    /**
+     * Palauttaa eDPI arvon
+     * @return Palauttaa eDPI arvon
+     */
+    public double getEdpi() {
+        return edpi;
+    }
+
+
     /**
      * Arvotaan satunnainen kokonaisluku väluille [ala,yla]
      * @param ala arvonnan alaraja
@@ -65,6 +84,7 @@ public class Profiili {
         out.println(String.format("%03d", tunnusNro) + " nimimerkki: " + nimimerkki + " joukkue: " + joukkue);
         out.println("sens: " + hiirenHerkkyys + " dpi: " + dpi);
         out.println("resoluutio: " + naytonTarkkuus + " kuvasuhde: " + kuvasuhde + " " + skaalaus + " refresh rate: " + virkistystaajuus + " hz");
+        out.println("eDPI:" + getEdpi());
     }
     
     
@@ -128,13 +148,153 @@ public class Profiili {
         return nimimerkki;
     }
     
+    /**
+     * Palauttaa hiiren herkkyyden
+     * @return Palauttaa hiiren herkkyyden
+     */
+    public double getHerkkyys() {
+        return hiirenHerkkyys;
+    }
+
+
+    /**
+     * Palauttaa dpi arvon
+     * @return Palauttaa dpi arvon
+     */
+    public int getDPI() {
+        return dpi;
+    }
+
+
+    /**
+     * Palauttaa näytöntarkkuuden merkkijonona
+     * @return Palauttaa näytöntarkkuuden merkkijonona
+     */
+    public String getTarkkuus() {
+        return naytonTarkkuus;
+    }
+
+
+    /**
+     * Palauttaa kuvasuhteen merkkijonona
+     * @return Palauttaa kuvasuhteen merkkijonona
+     */
+    public String getKuvasuhde() {
+        return kuvasuhde;
+    }
+
+
+    /**
+     * Palauttaa skaalauksen merkkijonona
+     * @return Palauttaa skaalauksen merkkijonona
+     */
+    public String getSkaalaus() {
+        return skaalaus;
+    }
+    
+    
+    /**
+     * Palauttaa virkistystaajuuden kokonaislukuna
+     * @return Palauttaa virkistystaajuuden kokonaislukuna
+     */
+    public int getTaajuus() {
+        return virkistystaajuus;
+    }
+    
+    
+    /**
+     * Asettaa profiilille uuden nimen
+     * @param s merkkijono, joka asetetaan
+     * @return null jos ei virhettä, muuten virhe merkkijonona
+     */
+    public String setNimi(String s) {
+        nimimerkki = s;
+        return null;
+    }
+
+
+    /**
+     * Asettaa profiilille uuden hiirenherkkyyden
+     * @param s merkkijono, joka asetetaan herkkyydeksi
+     * @return null jos ei virhettä, muuten virhe merkkijonona
+     */
+    public String setHerkkyys(String s) {
+        if ( !s.matches("^(-?)(0|([1-9][0-9]*))(\\.[0-9]+)?$") ) return "käytä erottimena \".\"";
+        hiirenHerkkyys = Mjonot.erotaDouble(s, hiirenHerkkyys);
+        setEdpi();
+        return null;
+        
+    }
+
+
+    /**
+     * Asettaa profiilille uuden dpi:n
+     * @param s merkkijono, joka asetetaan dpi:ksi
+     * @return null jos ei virhettä, muuten virhe merkkijonona
+     */
+    public String setDPI(String s) {
+        if ( !s.matches("[0-9]*") ) return "dpi:n oltava numeerinen";
+        dpi = Mjonot.erotaInt(s, dpi);
+        setEdpi();
+        return null;
+    }
+
+
+    /**
+     * Asettaa profiilille uuden näytöntarkkuuden
+     * @param s merkkijono, joka asetetaan herkkyydeksi
+     * @return null jos ei virhettä, muuten virhe merkkijonona
+     */
+    public String setTarkkuus(String s) {
+        if ( !s.matches("^([1-9][0-9][0-9]|[1-9][0-9][0-9][0-9])x([1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|)$") ) return "näytön tarkkuuden oltava muotoa 1920x1080";
+        naytonTarkkuus = s;
+        return null;
+    }
+
+
+    /**
+     * Asettaa profiilille uuden kuvasuhteen
+     * @param s merkkijono, joka asetetaan kuvasuhteeksi
+     * @return null jos ei virhettä, muuten virhe merkkijonona
+     */
+    public String setKuvasuhde(String s) {
+        if ( !s.matches("4:3") && !s.matches("16:9") && !s.matches("16:10") ) return "kuvasuhteen oltava muotoa 16:9 tms.";
+        kuvasuhde = s;
+        return null;
+    }
+
+
+    /**
+     * Asettaa profiilille uuden skaalauksen
+     * @param s merkkijono, joka asetetaan skaalaukseksi
+     * @return null jos ei virhettä, muuten virhe merkkijonona
+     */
+    public String setSkaalaus(String s) {
+        skaalaus = s;
+        return null;
+    }
+
+
+    /**
+     * Asettaa profiilille uuden virkistystaajuuden
+     * @param s merkkijono, joka asetetaan virkistystaajuudeksi
+     * @return null jos ei virhettä, muuten virhe merkkijonona
+     */
+    public String setTaajuus(String s) {
+        if ( !s.matches("[0-9]*") ) return "virkistystaajuuden oltava numeerinen";
+        virkistystaajuus = Mjonot.erotaInt(s, virkistystaajuus);
+        return null;
+    }
+    
     
     /**
      * Asetetaan profiilille joukkueen numero
      * @param jnro joukkueen tunnusnumero
+     * @return null jos ei virhettä, muuten virhe merkkijonona
      */
-    public void asetaJoukkue(int jnro) {
-        this.joukkue = jnro;
+    public String setJoukkue(int jnro) {
+        joukkue = jnro;
+        return null;
     }
     
     
@@ -204,6 +364,28 @@ public class Profiili {
     }
     
     
+    /**
+     * Tehdään identtinen klooni jäsenestä
+     * @return Object kloonattu jäsen
+     * @example
+     * <pre name="test">
+     * #THROWS CloneNotSupportedException
+     *   Profiili profiili = new Profiili();
+     *   profiili.parse("   3  |  allu  | 123");
+     *   Profiili kopio = profiili.clone();
+     *   kopio.toString() === profiili.toString();
+     *   profiili.parse("   4  |  allu2   | 123");
+     *   kopio.toString().equals(profiili.toString()) === false;
+     * </pre>
+     */
+    @Override
+    public Profiili clone() throws CloneNotSupportedException {
+        Profiili uusi;
+        uusi = (Profiili) super.clone();
+        return uusi;
+    }
+    
+    
     @Override
     public boolean equals(Object profiili) {
         if ( profiili == null ) return false;
@@ -236,5 +418,4 @@ public class Profiili {
         allu2.taytaAlluTiedoilla();
         allu2.tulosta(System.out);
     }
-
 }

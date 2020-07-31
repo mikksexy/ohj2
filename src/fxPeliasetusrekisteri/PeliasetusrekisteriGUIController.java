@@ -5,15 +5,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Font;
 import peliasetusrekisteri.Profiili;
 import peliasetusrekisteri.Rekisteri;
 import peliasetusrekisteri.Joukkue;
 import peliasetusrekisteri.SailoException;
 
+import java.awt.Desktop;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.ResourceBundle;
@@ -23,7 +25,7 @@ import fi.jyu.mit.fxgui.*;
 /**
  * Luokka käyttöliittymän tapahtumien hoitamiseksi
  * @author Sami
- * @version 24.7.2020
+ * @version 30.7.2020
  *
  */
 public class PeliasetusrekisteriGUIController implements Initializable {
@@ -33,6 +35,16 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     @FXML private ComboBoxChooser<String> cbKentat;
     @FXML private TextField hakuehto;
     @FXML private Label labelVirhe;
+    @FXML private TextField editNimi;
+    @FXML private TextField editJoukkue;
+    @FXML private TextField editHerkkyys;
+    @FXML private TextField editDPI;
+    @FXML private TextField editTarkkuus;
+    @FXML private TextField editKuvasuhde;
+    @FXML private TextField editSkaalaus;
+    @FXML private TextField editTaajuus;
+    @FXML private TextField editEdpi;
+    @FXML private TextField editEdpiKa;
     
 
     @Override
@@ -88,7 +100,7 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      * Käsitellään profiilin tietojen muokkaaminen
      */
     @FXML void handlePoista() {
-        Dialogs.showQuestionDialog("Profiilin poistaminen", "Poistetaanko profiili: allu", "Kyllä", "Ei");
+        poista();
     }
     
     
@@ -96,7 +108,7 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      * Käsitellään avunpyynnöt
      */
     @FXML void handleApua() {
-        Dialogs.showMessageDialog("Apuva!");
+        avustus();
     }
     
     
@@ -114,19 +126,18 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     
     private Rekisteri rekisteri;
     private Profiili profiiliKohdalla;
-    private TextArea areaProfiili = new TextArea();
+    private TextField edits[];
     
     
     /**
      * Alustetaan käyttöliittymä
      */
     private void alusta() {
-        panelProfiili.setContent(areaProfiili);
-        areaProfiili.setFont(new Font("Courier New", 12));
-        panelProfiili.setFitToHeight(true);
         
         chooserProfiilit.clear();
         chooserProfiilit.addSelectionListener(e -> naytaProfiili());
+        
+        edits = new TextField[] { editNimi, editJoukkue, editHerkkyys, editDPI, editTarkkuus, editKuvasuhde, editSkaalaus, editTaajuus, editEdpi, editEdpiKa };
     }
     
     
@@ -137,11 +148,13 @@ public class PeliasetusrekisteriGUIController implements Initializable {
         profiiliKohdalla = chooserProfiilit.getSelectedObject();
         
         if (profiiliKohdalla == null) return;
+        profiiliKohdalla.setEdpi();
+        edits[8].setText(String.format("%.1f", profiiliKohdalla.getEdpi()));
+        edits[9].setText(String.format("%.1f",rekisteri.edpiKa()));
         
-        areaProfiili.setText("");
-        try (PrintStream os = TextAreaOutputStream.getTextPrintStream(areaProfiili)) {
-            tulosta(os, profiiliKohdalla);
-        }
+        ProfiiliDialogController.naytaProfiili(edits, profiiliKohdalla);
+        
+        
     }
     
     
@@ -198,14 +211,10 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      */
     private void uusiProfiili() {
         Profiili uusi = new Profiili();
+        uusi = ProfiiliDialogController.kysyProfiili(null, uusi);
+        if ( uusi == null ) return;
         uusi.rekisteroi();
-        uusi.taytaAlluTiedoilla(); // TODO: korvaa oikealla dialogilla
-        try {
-            rekisteri.lisaa(uusi);
-        } catch (SailoException e) {
-            Dialogs.showMessageDialog("Ongelmia uuden luomisessa " + e.getMessage());
-            return;
-        }
+        rekisteri.lisaa(uusi);
         hae(uusi.getTunnusNro());
     }
     
@@ -219,6 +228,18 @@ public class PeliasetusrekisteriGUIController implements Initializable {
         jou.taytaJoukkueTiedoilla();
         rekisteri.lisaa(jou);
         hae(profiiliKohdalla.getTunnusNro());
+    }
+    
+    
+    private void poista() {
+        Profiili profiili = profiiliKohdalla;
+        if ( profiili == null ) return;
+        if ( !Dialogs.showQuestionDialog("Poisto", "Poistetaanko profiili: " + profiili.getNimimerkki(), "Kyllä", "Ei") )
+            return;
+        rekisteri.poista(profiili);
+        int index = chooserProfiilit.getSelectedIndex();
+        hae(0);
+        chooserProfiilit.setSelectedIndex(index);
     }
     
     
@@ -242,7 +263,6 @@ public class PeliasetusrekisteriGUIController implements Initializable {
             profiilit = rekisteri.etsi(ehto, k);
             int i = 0;
             for (Profiili profiili : profiilit) {
-                profiili = rekisteri.annaProfiili(i);
                 if (profiili.getTunnusNro() == pnro) index = i;
                 chooserProfiilit.add(profiili.getNimimerkki(), profiili);
                 i++;
@@ -251,7 +271,7 @@ public class PeliasetusrekisteriGUIController implements Initializable {
             Dialogs.showMessageDialog("Profiilin hakemisessa ongelmia! " + ex.getMessage());
         }
         
-        chooserProfiilit.setSelectedIndex(index);
+        chooserProfiilit.getSelectionModel().select(index);
     }
     
     
@@ -259,7 +279,16 @@ public class PeliasetusrekisteriGUIController implements Initializable {
      * Profiilin tietojen muokkaaminen
      */
     private void muokkaa() {
-        ModalController.showModal(PeliasetusrekisteriGUIController.class.getResource("ProfiiliDialogView.fxml"), "Muokkaa profiilin tietoja", null, "");
+        if ( profiiliKohdalla == null ) return; 
+            try { 
+                Profiili profiili; 
+                profiili = ProfiiliDialogController.kysyProfiili(null, profiiliKohdalla.clone()); 
+                if ( profiili == null ) return; 
+                rekisteri.korvaaTaiLisaa(profiili); 
+                hae(profiili.getTunnusNro()); 
+            } catch (CloneNotSupportedException e) { 
+                Dialogs.showMessageDialog(e.getMessage());
+            } 
     }
 
 
@@ -280,6 +309,24 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     public boolean voikoSulkea() {
         tallenna();
         return true;
+    }
+    
+    
+    /**
+     * Näytetään ohjelman suunnitelma erillisessä selaimessa.
+     */
+    private void avustus() {
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            URI uri = new URI("https://tim.jyu.fi/view/kurssit/tie/ohj2/2020k/ht/mikksexy");
+            desktop.browse(uri);
+        } catch (URISyntaxException e) {
+            naytaVirhe(e.getMessage());
+            return;
+        } catch (IOException e) {
+            naytaVirhe(e.getMessage());
+            return;
+        }
     }
     
     

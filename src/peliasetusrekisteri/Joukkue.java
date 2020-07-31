@@ -24,7 +24,7 @@ public class Joukkue {
      * Alustetaan joukkue
      */
     public Joukkue() {
-        taytaJoukkueTiedoilla();
+        // taytaJoukkueTiedoilla();
     }
     
     
@@ -102,6 +102,15 @@ public class Joukkue {
      */
     public int getTunnusNro() {
         return tunnusNro;
+    }
+    
+    
+    /**
+     * Palautetaan joukkueen nimi
+     * @return Palauttaa joukkueen nimen
+     */
+    public String getNimi() {
+        return nimi;
     }
     
     

@@ -16,7 +16,7 @@ import java.util.*;
  * @version 24.7.2020
  *
  */
-public class Joukkueet implements Iterable<Joukkue>{
+public class Joukkueet implements Iterable<Joukkue> {
     private final Collection<Joukkue> alkiot = new ArrayList<Joukkue>();
     private boolean muutettu = false;
 
@@ -54,7 +54,7 @@ public class Joukkueet implements Iterable<Joukkue>{
      *  joukkueet.lisaa(ence1);
      *  joukkueet.lisaa(ence2);
      *  joukkueet.tallenna();
-     *  joukkueet = new joukkueet();
+     *  joukkueet = new Joukkueet();
      *  joukkueet.lueTiedostosta();
      *  Iterator<Joukkue> i = joukkueet.iterator();
      *  i.next().toString() === ence1.toString();
@@ -161,15 +161,17 @@ public class Joukkueet implements Iterable<Joukkue>{
      * #import java.util.*;
      * 
      *  Joukkueet joukkueet = new Joukkueet();
-     *  Joukkue pitsi21 = new Joukkue("pitsi21"); joukkueet.lisaa(pitsi21);
+     *  Joukkue pitsi21 = new Joukkue(); joukkueet.lisaa(pitsi21);
      *  Joukkue pitsi11 = new Joukkue(); joukkueet.lisaa(pitsi11);
      *  joukkueet.annaJoukkue(1) === pitsi21;
      * </pre> 
      */
     public Joukkue annaJoukkue(int tunnusnro) {
         Joukkue joukkue = new Joukkue();
-        for (Joukkue jou : alkiot)
-            if (jou.getTunnusNro() == tunnusnro) joukkue = jou;
+        for (Joukkue jou : this)
+            if (jou.getTunnusNro() == tunnusnro) {
+                joukkue = jou;
+            }
             return joukkue;
     }
 

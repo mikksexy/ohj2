@@ -11,14 +11,13 @@ import java.util.List;
  *
  */
 public class Rekisteri {
-    
+
     private Profiilit profiilit = new Profiilit();
     private Joukkueet joukkueet = new Joukkueet();
-    
+
     /**
      * Lisätään uusi profiili rekisteriin
      * @param profiili lisättävä profiili
-     * @throws SailoException jos ei mahdu
      * @example
      * <pre name="test">
      * #THROWS SailoException
@@ -35,14 +34,22 @@ public class Rekisteri {
      * rekisteri.annaProfiili(3) === allu1; #THROWS IndexOutOfBoundsException
      * rekisteri.lisaa(allu1); rekisteri.getProfiileja() === 4;
      * rekisteri.lisaa(allu1); rekisteri.getProfiileja() === 5;
-     * rekisteri.lisaa(allu1); #THROWS SailoException
+     * rekisteri.lisaa(allu1); 
      * </pre>
      */
-    public void lisaa(Profiili profiili) throws SailoException {
+    public void lisaa(Profiili profiili) {
         profiilit.lisaa(profiili);
     }
 
-    
+    /**
+     * Korvaa profiilin tietorakenteessa. Tarkastetaan löytyykö profiili jo,
+     * jos ei niin lisätään uutena profiilina
+     * @param profiili profiili joka lisätään tai korvataan
+     */
+    public void korvaaTaiLisaa(Profiili profiili) {
+        profiilit.korvaaTaiLisaa(profiili);
+    }
+
     /**
      * Listään uusi joukkue rekisteriin
      * @param jou lisättävä joukkue
@@ -51,7 +58,6 @@ public class Rekisteri {
         joukkueet.lisaa(jou);
     }
 
-    
     /**
      * Palauttaa profiilien lukumäärän
      * @return profiilien lukumäärä
@@ -60,29 +66,32 @@ public class Rekisteri {
         return profiilit.getLkm();
     }
     
-    
+
     /**
-     * Poistaa profiileista ja joukkueista ne joilla on nro. Kesken.
-     * @param nro viitenumero, jonka mukaan poistetaan
+     * Poistaa profiileista profiilin sekä joukkueen, jos joukkueessa ei muita profiileja
+     * @param profiili profiili joka poistetaan
      * @return montako profiilia poistettiin
+     * TODO: testit
      */
-    public int poista(@SuppressWarnings("unused") int nro) {
-        return 0;
+    public int poista(Profiili profiili) {
+        if ( profiili == null ) return 0;
+        int ret = profiilit.poista(profiili.getTunnusNro()); 
+        //joukkueet.poista(profiili.getJoukkue()); 
+        return ret; 
     }
-    
-    
+
+
     /** 
      * Palauttaa "taulukossa" hakuehtoon vastaavien jäsenten viitteet 
      * @param hakuehto hakuehto  
      * @param k etsittävän kentän indeksi  
      * @return tietorakenteen löytyneistä jäsenistä 
      * @throws SailoException Jos jotakin menee väärin
-     */ 
-    public Collection<Profiili> etsi(String hakuehto, int k) throws SailoException { 
-        return profiilit.etsi(hakuehto, k); 
-    } 
-    
-    
+     */
+    public Collection<Profiili> etsi(String hakuehto, int k) throws SailoException {
+        return profiilit.etsi(hakuehto, k);
+    }
+
     /**
      * Haetaan joukkueen tunnusnumero
      * @param jou Joukkue jonka numero halutaan tietää
@@ -91,19 +100,17 @@ public class Rekisteri {
     public int annaJnro(Joukkue jou) {
         return joukkueet.annaJnro(jou);
     }
-    
-    
+
     /**
      * Asetetaan profiilille joukkue
      * @param pro profiili, jolle laitetaan joukkue
      * @param jou joukkuenumero, joka laitetaan profiiliin
      */
-    public void asetaJoukkue(Profiili pro, Joukkue jou) {
+    public void setJoukkue(Profiili pro, Joukkue jou) {
         int jnro = annaJnro(jou);
-        profiilit.asetaJoukkue(pro, jnro);
+        profiilit.setJoukkue(pro, jnro);
     }
-    
-    
+
     /**
      * Palauttaa i:n profiilin
      * @param i monesko profiili palautetaan
@@ -112,8 +119,7 @@ public class Rekisteri {
     public Profiili annaProfiili(int i) {
         return profiilit.anna(i);
     }
-    
-    
+
     /**
      * Haetaan profiilin joukkue
      * @param profiili
@@ -128,15 +134,14 @@ public class Rekisteri {
      * allu1.rekisteroi(); allu2.rekisteroi(); allu3.rekisteroi();
      * Joukkue ence1 = new Joukkue("ence1"); rekisteri.lisaa(ence1);
      * Joukkue ence2 = new Joukkue("ence2"); rekisteri.lisaa(ence2);
-     * rekisteri.asetaJoukkue(allu1, ence1);
+     * rekisteri.setJoukkue(allu1, ence1);
      * rekisteri.annaJoukkue(allu1) === ence1;
      * </pre>
      */
     public Joukkue annaJoukkue(Profiili profiili) {
         return joukkueet.annaJoukkue(profiili.getJoukkue());
     }
-    
-    
+
     /**
      * Haetaan joukkueen profiilit
      * @param jou Joukkue jonka profiileja haetaan
@@ -150,13 +155,13 @@ public class Rekisteri {
      * allu1.rekisteroi(); allu2.rekisteroi(); allu3.rekisteroi();
      * Joukkue ence1 = new Joukkue("ence1"); rekisteri.lisaa(ence1);
      * Joukkue ence2 = new Joukkue("ence2"); rekisteri.lisaa(ence2);
-     * rekisteri.asetaJoukkue(allu1, ence1);
-     * rekisteri.asetaJoukkue(allu2, ence1);
+     * rekisteri.setJoukkue(allu1, ence1);
+     * rekisteri.setJoukkue(allu2, ence1);
      *
      * List<Profiili> loytyneet;
      * loytyneet = rekisteri.annaProfiilit(ence2);
      * loytyneet.size() === 0;
-     * rekisteri.asetaJoukkue(allu3, ence2);
+     * rekisteri.setJoukkue(allu3, ence2);
      * loytyneet = rekisteri.annaProfiilit(ence2);
      * loytyneet.size() === 1;
      * loytyneet.get(0) == allu3 === true;
@@ -168,8 +173,7 @@ public class Rekisteri {
     public List<Profiili> annaProfiilit(Joukkue jou) {
         return profiilit.annaProfiilit(jou.getTunnusNro());
     }
-    
-    
+
     /**
      * Lukee rekisterin tiedot tiedostosta
      * @throws SailoException jos lukeminen epäonnistuu
@@ -213,12 +217,11 @@ public class Rekisteri {
     public void lueTiedostosta() throws SailoException {
         profiilit = new Profiilit();
         joukkueet = new Joukkueet();
-        
+
         profiilit.lueTiedostosta();
         joukkueet.lueTiedostosta();
     }
 
-    
     /**
      * Tallentaa rekisterin tiedot tiedostoon
      * @throws SailoException jos tallentamisessa ongelmia
@@ -236,42 +239,50 @@ public class Rekisteri {
         } catch (SailoException ex) {
             virhe += ex.getMessage();
         }
-        if ( !"".equals(virhe) ) throw new SailoException(virhe);
+        if (!"".equals(virhe))
+            throw new SailoException(virhe);
     }
     
     
+    /**
+     * Laskee kaikkien profiilien eDPI-keskiarvon
+     * @return Palauttaa eDPI-keskiarvon
+     */
+    public double edpiKa() {
+        return profiilit.edpiKa();
+    }
+
     /**
      * @param args Ei käytössä
      */
     public static void main(String[] args) {
         var rekisteri = new Rekisteri();
-        
-        try {
-            
-            var allu1 = new Profiili();
-            var allu2 = new Profiili();
-            
-            allu1.rekisteroi();
-            allu1.taytaAlluTiedoilla();
-            allu2.rekisteroi();
-            allu2.taytaAlluTiedoilla();
-            
-            rekisteri.lisaa(allu1);
-            rekisteri.lisaa(allu2);
-            
-            rekisteri.annaJoukkue(allu1).tulosta(System.out);
-            Joukkue ence1 = new Joukkue(); ence1.taytaJoukkueTiedoilla(); rekisteri.lisaa(ence1);
-            Joukkue ence2 = new Joukkue(); ence2.taytaJoukkueTiedoilla(); rekisteri.lisaa(ence2);
-            
-            System.out.println("testi");
-            for (int i = 0; i < rekisteri.getProfiileja(); i++) {
-                Profiili profiili = rekisteri.annaProfiili(i);
-                System.out.println("Profiilin indeksi: " +  i);
-                profiili.tulosta(System.out);
-            } 
-        } catch (SailoException e) {
-            System.err.println(e.getMessage());
-            System.err.flush();
+
+        var allu1 = new Profiili();
+        var allu2 = new Profiili();
+
+        allu1.rekisteroi();
+        allu1.taytaAlluTiedoilla();
+        allu2.rekisteroi();
+        allu2.taytaAlluTiedoilla();
+
+        rekisteri.lisaa(allu1);
+        rekisteri.lisaa(allu2);
+
+        rekisteri.annaJoukkue(allu1).tulosta(System.out);
+        Joukkue ence1 = new Joukkue();
+        ence1.taytaJoukkueTiedoilla();
+        rekisteri.lisaa(ence1);
+        Joukkue ence2 = new Joukkue();
+        ence2.taytaJoukkueTiedoilla();
+        rekisteri.lisaa(ence2);
+
+        System.out.println("testi");
+        for (int i = 0; i < rekisteri.getProfiileja(); i++) {
+            Profiili profiili = rekisteri.annaProfiili(i);
+            System.out.println("Profiilin indeksi: " + i);
+            profiili.tulosta(System.out);
+
         }
     }
 
