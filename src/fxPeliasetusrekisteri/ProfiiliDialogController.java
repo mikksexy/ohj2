@@ -33,18 +33,27 @@ public class ProfiiliDialogController implements ModalControllerInterface<Profii
     @FXML private Label labelVirhe;
     
     
+    /**
+     * Alustus
+     */
     @Override
     public void initialize(URL url, ResourceBundle bundle) {
         alusta();
     }
 
     
+    /**
+     * Käsitellään peruuta
+     */
     @FXML private void handleCancel() {
         profiiliKohdalla = null;
         ModalController.closeStage(labelVirhe);
     }
     
 
+    /**
+     * Käsitellään tallenna
+     */
     @FXML private void handleTallenna() {
         if ( profiiliKohdalla != null && profiiliKohdalla.getNimimerkki().trim().equals("") ) {
             naytaVirhe("Nimi ei saa olla tyhjä!");
@@ -75,9 +84,9 @@ public class ProfiiliDialogController implements ModalControllerInterface<Profii
 
 
     /**
-     * TODO:
-     * @param k
-     * @param edit
+     * Käsitellään profiiliin tapahtuneet muutokset
+     * @param k tekstikentän numero
+     * @param edit muokattava tekstikenttä
      */
     private void kasitteleMuutosProfiiliin(int k, TextField edit) {
         if ( profiiliKohdalla == null ) return;
@@ -107,64 +116,37 @@ public class ProfiiliDialogController implements ModalControllerInterface<Profii
     
     
     /**
-     * Uuden joukkueen luominen
-     * @param nimi
-     
-    private String uusiJoukkue(String nimi) {
-        if ( nimi == null || nimi.equals("")) return nimi;
-        int onko = rekisteri.onkoMuita2(nimi);
-        int muita = rekisteri.onkoMuita(nimi);
-        if ( onko != 0 ) return profiiliKohdalla.setJoukkue(muita);
-        if ( onko < 1 ) rekisteri.poista(joukkue);
-
-        joukkue = new Joukkue(nimi);
-        joukkue.rekisteroi();
-        return profiiliKohdalla.setJoukkue(rekisteri.korvaaTaiLisaa(joukkue));
-        // joukkue = new Joukkue(nimi);
-        // joukkue.rekisteroi();
-        // if(profiiliKohdalla.getJoukkue() == null --> uusijoukkue() if (nimi equals onkoMuita(); setJoukkue(muita)
-    }*/
-    
-    
+     * Asettaa uuden joukkueen profiiliin
+     * @param nimi Joukkueen nimi
+     * @return null jos ei ongelmia, muuten virhe tms.
+     */
     private String asetaJoukkue(String nimi) {
-        if ( nimi == null || nimi.equals("")) return nimi;
-        //if ( rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi() )
+        if ( nimi == null || nimi.equals("")) return "tyhjä joukkue";
+        int onko = rekisteri.onkoMonta(nimi);
+        if ( profiiliKohdalla.getJoukkue() == 0 && onko > 1 ) return profiiliKohdalla.setJoukkue(rekisteri.onkoMuita(nimi));
         if ( profiiliKohdalla.getJoukkue() == 0 ) return uusiJoukkue(nimi);
-        int onko = rekisteri.onkoMuita2(nimi);
-        if ( onko < 1 ) rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).setNimi(nimi);
-        /*if ( onko == 1 &&  rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi().equals(nimi) ) {
-            //rekisteri.poista(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()));
-            return profiiliKohdalla.setJoukkue(rekisteri.onkoMuita(nimi));
-        }
-        if ( onko == 1 &&  !rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi().equals(nimi) ) {
-            //rekisteri.poista(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()));
-            return profiiliKohdalla.setJoukkue(rekisteri.onkoMuita(nimi));
-        }*/
-        /*if ( onko > 1 &&  rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi().equals(nimi) ) {
-            //rekisteri.poista(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()));
-            return profiiliKohdalla.setJoukkue(rekisteri.onkoMuita(nimi));
-        }*/
-        /*if ( onko > 1 &&  !rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi().equals(nimi) ) {
-            //rekisteri.poista(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()));
-            //return uusiJoukkue(nimi);
+        if ( onko < 1 && rekisteri.onkoMonta(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi()) <= 1) {
             return rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).setNimi(nimi);
-        }*/
-        
-        if ( onko >= 1 && rekisteri.onkoMuita2(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi()) != 0 ) {
+        }
+        if ( onko < 1 && rekisteri.onkoMonta(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi()) > 1) {
+            return uusiJoukkue(nimi);
+        }
+        if ( onko >= 1 && rekisteri.onkoMonta(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi()) >= 1 ) {
             return profiiliKohdalla.setJoukkue(rekisteri.onkoMuita(nimi));
         }
-        
-        if ( onko < 1 && rekisteri.onkoMuita2(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi()) != 0 ) {
+        if ( onko >= 1 && rekisteri.onkoMonta(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi()) < 1 ) {
+            rekisteri.poista(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()));
             return profiiliKohdalla.setJoukkue(rekisteri.onkoMuita(nimi));
-        }
-        
-        if ( onko < 1 && rekisteri.onkoMuita2(rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).getNimi()) == 0 ) {
-            return rekisteri.annaJoukkue(profiiliKohdalla.getJoukkue()).setNimi(nimi);
         }
         return null;
     }
     
     
+    /**
+     * Luodaan uusi joukkue
+     * @param nimi Joukkueen nimi
+     * @return null jos ei ongelmia muuten merkkijono
+     */
     private String uusiJoukkue(String nimi) {
         joukkue = new Joukkue(nimi);
         joukkue.rekisteroi();
@@ -173,8 +155,8 @@ public class ProfiiliDialogController implements ModalControllerInterface<Profii
 
 
     /**
-     * TODO:
-     * @param virhe
+     * Näyttää virheet eli asettaa merkkijonoja labelille
+     * @param virhe merkkijono jossa kerrotaan, että on tapahtunut virhe
      */
     private void naytaVirhe(String virhe) {
         if ( virhe == null || virhe.isEmpty() ) {

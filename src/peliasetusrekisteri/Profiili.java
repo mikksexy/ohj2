@@ -40,7 +40,7 @@ public class Profiili implements Cloneable{
          
         
         /**
-         * @param k monenneko kentän sisältöä verrataan
+         * @param k monennenko kentän sisältöä verrataan
          */
         public Vertailija(int k) { 
             this.k = k; 
@@ -55,7 +55,7 @@ public class Profiili implements Cloneable{
     
     /** 
      * Antaa k:n kentän sisällön merkkijonona 
-     * @param k monenenko kentän sisältö palautetaan 
+     * @param k monennenko kentän sisältö palautetaan 
      * @return kentän sisältö merkkijonona 
      */ 
     public String getAvain(int k) { 
@@ -408,8 +408,8 @@ public class Profiili implements Cloneable{
     
     
     /**
-     * Tehdään identtinen klooni jäsenestä
-     * @return Object kloonattu jäsen
+     * Tehdään identtinen klooni profiilista
+     * @return Object kloonattu profiili
      * @example
      * <pre name="test">
      * #THROWS CloneNotSupportedException
@@ -428,7 +428,25 @@ public class Profiili implements Cloneable{
         return uusi;
     }
     
-    
+    /**
+     * Tutkii onko profiilin tiedot samat kuin parametrina tuodun profiilin tiedot
+     * @param profiili profiili johon verrataan
+     * @return true jos kaikki tiedot samat, false muuten
+     * @example
+     * <pre name="test">
+     *   Profiili profiili1 = new Profiili();
+     *   profiili1.parse("   3  |  allu   | 2 ");
+     *   Profiili profiili2 = new Profiili();
+     *   profiili2.parse("   3  |  allu   | 2 ");
+     *   Profiili profiili3 = new Profiili();
+     *   profiili3.parse("   3  |  allu   | 3 ");
+     *   
+     *   profiili1.equals(profiili2) === true;
+     *   profiili2.equals(profiili1) === true;
+     *   profiili1.equals(profiili3) === false;
+     *   profiili3.equals(profiili2) === false;
+     * </pre>
+     */
     @Override
     public boolean equals(Object profiili) {
         if ( profiili == null ) return false;

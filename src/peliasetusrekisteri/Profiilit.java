@@ -67,11 +67,32 @@ public class Profiilit implements Iterable<Profiili>{
     
     
     /**
-     * Korvaa profiilin tietorakenteessa. Tarkastetaan löytyykö profiili jo,
-     * jos ei niin lisätään uutena profiilina
-     * @param profiili
-     * TODO: testit
+     * Korvaa profiilin tietorakenteessa.  Ottaa profiilin omistukseensa.
+     * Etsitään samalla tunnusnumerolla oleva profiili.  Jos ei löydy,
+     * niin lisätään uutena profiilina.
+     * @param profiili lisättävän profiilin viite.
+     * <pre name="test">
+     * #THROWS CloneNotSupportedException
+     * #PACKAGEIMPORT
+     * Profiilit profiilit = new Profiilit();
+     * Profiili allu1 = new Profiili(), allu2 = new Profiili();
+     * allu1.rekisteroi(); allu2.rekisteroi();
+     * profiilit.getLkm() === 0;
+     * profiilit.korvaaTaiLisaa(allu1); profiilit.getLkm() === 1;
+     * profiilit.korvaaTaiLisaa(allu2); profiilit.getLkm() === 2;
+     * Profiili allu3 = allu1.clone();
+     * allu3.setJoukkue(2);
+     * Iterator<Profiili> it = profiilit.iterator();
+     * it.next() == allu1 === true;
+     * profiilit.korvaaTaiLisaa(allu3); profiilit.getLkm() === 2;
+     * it = profiilit.iterator();
+     * Profiili j0 = it.next();
+     * j0 === allu3;
+     * j0 == allu3 === true;
+     * j0 == allu1 === false;
+     * </pre>
      */
+
     public void korvaaTaiLisaa(Profiili profiili) {
         int id = profiili.getTunnusNro();
         for ( int i = 0; i < lkm; i++ ) {
@@ -111,7 +132,6 @@ public class Profiilit implements Iterable<Profiili>{
      * int id1 = allu1.getTunnusNro(); 
      * profiilit.lisaa(allu1); profiilit.lisaa(allu2); profiilit.lisaa(allu3); 
      * profiilit.poista(id1+1) === 1; 
-     * profiilit.annaId(id1+1) === null; profiilit.getLkm() === 2; 
      * profiilit.poista(id1) === 1; profiilit.getLkm() === 1; 
      * profiilit.poista(id1+3) === 0; profiilit.getLkm() === 1; 
      * </pre> 
@@ -239,19 +259,7 @@ public class Profiilit implements Iterable<Profiili>{
     
     
     /**
-     * @return asd
-     */
-    public List<Integer> roskat() {
-        List<Integer> loydetyt = new ArrayList<Integer>();
-        for (Profiili pro : this) {
-            if (pro.getJoukkue() != 0) loydetyt.add(pro.getJoukkue());
-        }
-        return loydetyt;
-    }
-    
-    
-    /**
-     * Luokka jäsenten iteroimiseksi.
+     * Luokka profiilien iteroimiseksi.
      * @example
      * <pre name="test">
      * #THROWS SailoException 
@@ -296,7 +304,7 @@ public class Profiilit implements Iterable<Profiili>{
 
 
         /**
-         * Onko olemassa vielä seuraavaa profiilia
+         * Onko olemassa vielä seuraava profiili
          * @see java.util.Iterator#hasNext()
          * @return true jos on vielä profiileja
          */
@@ -309,7 +317,7 @@ public class Profiilit implements Iterable<Profiili>{
         /**
          * Annetaan seuraava profiili
          * @return seuraava profiili
-         * @throws NoSuchElementException jos seuraava alkiota ei enää ole
+         * @throws NoSuchElementException jos seuraavaa alkiota ei enää ole
          * @see java.util.Iterator#next()
          */
         @Override
@@ -355,7 +363,9 @@ public class Profiilit implements Iterable<Profiili>{
      *   Profiili pro4 = new Profiili(); pro4.parse("4|ropz|3|1.77"); 
      *   Profiili pro5 = new Profiili(); pro5.parse("5|Jamppi|2|1.25"); 
      *   profiilit.lisaa(pro1); profiilit.lisaa(pro2); profiilit.lisaa(pro4); profiilit.lisaa(pro5);
-     *   // TODO: toistaiseksi palauttaa kaikki profiilit
+     *   List<Profiili> loytyneet;  
+     *   loytyneet = (List<Profiili>)profiilit.etsi("*s*",0);  
+     *   loytyneet.size() === 1;
      * </pre> 
      */ 
     public Collection<Profiili> etsi(String hakuehto, int k) {
@@ -364,13 +374,6 @@ public class Profiilit implements Iterable<Profiili>{
         int hk = k;
         if ( hk < 0 ) hk = 0;
         List<Profiili> loytyneet = new ArrayList<Profiili>();
-        if ( hk == 1 ) {
-            int tunnusNro = Integer.parseInt(hakuehto);
-            for (Profiili pro : this) {
-                if (pro.getJoukkue() == tunnusNro) loytyneet.add(pro);
-            }
-            return loytyneet;
-        }
         for (Profiili profiili : this) { 
             if ( WildChars.onkoSamat(profiili.getAvain(hk), ehto) )loytyneet.add(profiili);  
         }
@@ -404,6 +407,14 @@ public class Profiilit implements Iterable<Profiili>{
     /**
      * Laskee kaikkien profiilien eDPI:n keskiarvon
      * @return Palauttaa eDPI keskiarvon
+     * @example
+     * <pre name="test">
+     *   Profiilit profiilit = new Profiilit(); 
+     *   Profiili pro1= new Profiili(); pro1.parse("1|s1mple|1|3.09|400"); 
+     *   Profiili pro2 = new Profiili(); pro2.parse("2|allu|2|3.3|400"); 
+     *   profiilit.lisaa(pro1); pro1.setEdpi(); profiilit.edpiKa() ~~~ 1236;
+     *   profiilit.lisaa(pro2); pro2.setEdpi(); profiilit.edpiKa() ~~~ 1278;
+     * </pre>
      */
     public double edpiKa() {
         double ka = 0;

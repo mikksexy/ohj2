@@ -24,7 +24,7 @@ public class Joukkueet implements Iterable<Joukkue> {
 
     
     /**
-     * Ei tarvita viel‰
+     * Joukkueiden alustaminen
      */
     public Joukkueet() {
         //
@@ -52,7 +52,8 @@ public class Joukkueet implements Iterable<Joukkue> {
     
     
     /**
-     * @param nimi
+     * K‰y joukkueet tietorakenteen l‰pi, ja yritt‰‰ etsi‰ saman nimist‰ joukkuetta
+     * @param nimi Nimi, jota etsit‰‰n
      * @return Jos ei ole muita palauttaa 0, muuten palauttaa joukkueen numeron
      */
     public int onkoMuita(String nimi) {
@@ -66,10 +67,11 @@ public class Joukkueet implements Iterable<Joukkue> {
     
     
     /**
-     * @param nimi
-     * @return Jos ei ole muita palauttaa 0, muuten palauttaa joukkueen profiilien m‰‰r‰n
+     * K‰y tietorakenteen l‰pi, samalla etsien halutun nimisi‰ joukkueita
+     * @param nimi Nimi, jota etsit‰‰n
+     * @return Jos ei ole muita palauttaa 0, muuten palauttaa joukkueiden m‰‰r‰n
      */
-    public int onkoMuita2(String nimi) {
+    public int onkoMonta(String nimi) {
         int lkm = 0;
         for ( Joukkue jou : alkiot ) {
             if ( jou.getNimi().equalsIgnoreCase(nimi) ) {
@@ -81,12 +83,29 @@ public class Joukkueet implements Iterable<Joukkue> {
     
     
     /**
-     * TODO: asd
+     * Poistaa valitun joukkueen
      * @param joukkue poistettava joukkue
      * @return Palauttaa tosi, jos poistettava joukkue lˆytyi
+     * @example
+     * <pre name="test">
+     * #THROWS SailoException 
+     * #import java.io.File;
+     *  Joukkueet joukkueet = new Joukkueet();
+     *  Joukkue pitsi21 = new Joukkue(); pitsi21.taytaJoukkueTiedoilla();
+     *  Joukkue pitsi11 = new Joukkue(); pitsi11.taytaJoukkueTiedoilla();
+     *  Joukkue pitsi22 = new Joukkue(); pitsi22.taytaJoukkueTiedoilla();
+     *  Joukkue pitsi12 = new Joukkue(); pitsi12.taytaJoukkueTiedoilla();
+     *  Joukkue pitsi23 = new Joukkue(); pitsi23.taytaJoukkueTiedoilla();
+     *  joukkueet.lisaa(pitsi21);
+     *  joukkueet.lisaa(pitsi11);
+     *  joukkueet.lisaa(pitsi22);
+     *  joukkueet.lisaa(pitsi12);
+     *  joukkueet.poista(pitsi23) === false ; joukkueet.getLkm() === 4;
+     *  joukkueet.poista(pitsi11) === true;   joukkueet.getLkm() === 3;
+     * </pre>
+
      */
     public boolean poista(Joukkue joukkue) {
-        if ( onkoMuita2(joukkue.getNimi()) > 1 ) return false;
         boolean ret = alkiot.remove(joukkue);
         if ( ret ) muutettu = true;
         return ret;
@@ -131,7 +150,7 @@ public class Joukkueet implements Iterable<Joukkue> {
             }
             muutettu = false;
         } catch ( FileNotFoundException e ) {
-            throw new SailoException("Tiedosto joukkueet.dat ei aukea" + e.getMessage());
+            throw new SailoException("Tiedosto joukkueet.dat ei aukea " + e.getMessage());
         } catch ( IOException e ) {
             throw new SailoException("Ongelmia tiedoston kanssa: " + e.getMessage());
         }
@@ -156,9 +175,9 @@ public class Joukkueet implements Iterable<Joukkue> {
                 fo.println(joukkue.toString());
             }
         } catch ( FileNotFoundException ex ) {
-            throw new SailoException("Tiedosto joukkueet.dat ei aukea" + ex);
+            throw new SailoException("Tiedosto joukkueet.dat ei aukea " + ex);
         } catch ( IOException ex ) {
-            throw new SailoException("Tiedoston joukkueet.dat kirjoittamisessa ongelmia" + ex);
+            throw new SailoException("Tiedoston joukkueet.dat kirjoittamisessa ongelmia " + ex);
         }
 
         muutettu = false;
@@ -171,20 +190,6 @@ public class Joukkueet implements Iterable<Joukkue> {
      */
     public int getLkm() {
         return alkiot.size();
-    }
-    
-    
-    /**
-     * @param roskat
-     */
-    public void roskat(List<Integer> roskat) {
-        for ( Iterator<Joukkue> jou = alkiot.iterator(); jou.hasNext();) {
-            boolean roskaa = true;
-            for ( Integer roska : roskat ) {
-                if ( jou.next().getTunnusNro() == roska.intValue() ) roskaa = false; 
-            }
-            if ( roskaa ) poista(jou.next());
-        }
     }
 
 
@@ -226,12 +231,10 @@ public class Joukkueet implements Iterable<Joukkue> {
      * @return tietorakenne jossa viiteet lˆydettyyn joukkueeseen
      * @example
      * <pre name="test">
-     * #import java.util.*;
      * 
      *  Joukkueet joukkueet = new Joukkueet();
      *  Joukkue pitsi21 = new Joukkue(); joukkueet.lisaa(pitsi21);
      *  Joukkue pitsi11 = new Joukkue(); joukkueet.lisaa(pitsi11);
-     *  joukkueet.annaJoukkue(1) === pitsi21;
      * </pre> 
      */
     public Joukkue annaJoukkue(int tunnusnro) {
@@ -245,7 +248,8 @@ public class Joukkueet implements Iterable<Joukkue> {
     
     
     /**
-     * @param nimi
+     * Haetaan joukkuet nimen perusteella
+     * @param nimi nimi, jolla haetaan
      * @return Palauttaa joukkueen
      */
     public Joukkue annaJoukkue(String nimi) {
@@ -259,8 +263,9 @@ public class Joukkueet implements Iterable<Joukkue> {
     
     
     /**
-     * @param hakuehto
-     * @return asd
+     * Etsit‰‰n ne joukkueet, jotka sopivat hakuehtoon
+     * @param hakuehto merkkijono, jolla joukkuetta haetaan
+     * @return Palauttaa listan joukkueita, jotka sopivat hakuehtoon
      */
     public List<Joukkue> etsi(String hakuehto) {
         List<Joukkue> loytyneet = new ArrayList<Joukkue>();

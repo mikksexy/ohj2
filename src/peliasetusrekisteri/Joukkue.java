@@ -33,12 +33,12 @@ public class Joukkue {
      * @param joukkueNimi joukkueelle annettava nimi
      */
     public Joukkue(String joukkueNimi) {
-        this.nimi = joukkueNimi;
+        nimi = joukkueNimi;
     }
 
         
     /**
-     * Arvotaan satunnainen kokonaisluku väluille [ala,yla]
+     * Arvotaan satunnainen kokonaisluku välille [ala,yla]
      * @param ala arvonnan alaraja
      * @param yla arvonnan yläraja
      * @return satunnainen luku väliltä [ala,yla]
@@ -75,8 +75,8 @@ public class Joukkue {
     }
 
     /**
-     * Antaa harrastukselle seuraavan rekisterinumeron.
-     * @return harrastuksen uusi tunnus_nro
+     * Antaa joukkueelle seuraavan rekisterinumeron.
+     * @return joukkueen uusi tunnus_nro
      * @example
      * <pre name="test">
      *   Joukkue pitsi1 = new Joukkue();
@@ -115,8 +115,8 @@ public class Joukkue {
     
     
     /**
-     * TODO:;
-     * @param nimi
+     * Asetetaan joukkueelle uusi nimi
+     * @param nimi nimi joka halutaan joukkueelle antaa
      * @return Palauttaa nimen
      */
     public String setNimi(String nimi) {

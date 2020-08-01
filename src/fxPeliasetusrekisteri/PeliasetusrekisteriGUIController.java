@@ -47,6 +47,9 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     @FXML private TextField editEdpiKa;
     
 
+    /**
+     * Alustus
+     */
     @Override
     public void initialize(URL url, ResourceBundle bundle) {
         alusta();
@@ -217,6 +220,9 @@ public class PeliasetusrekisteriGUIController implements Initializable {
     }
     
     
+    /**
+     * Profiilin poistaminen
+     */
     private void poista() {
         Profiili profiili = profiiliKohdalla;
         if ( profiili == null ) return;
@@ -262,7 +268,6 @@ public class PeliasetusrekisteriGUIController implements Initializable {
         }
         
         chooserProfiilit.setSelectedIndex(index);
-        //chooserProfiilit.getSelectionModel().select(index);
     }
     
     
