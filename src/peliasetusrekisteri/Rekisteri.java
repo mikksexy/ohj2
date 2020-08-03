@@ -24,7 +24,6 @@ import java.util.List;
  *  private Joukkue ence2;
  *  private Joukkue ence3; 
  *  
- *  @SuppressWarnings("javadoc")
  *  public void alustaRekisteri() {
  *    rekisteri = new Rekisteri();
  *    allu1 = new Profiili(); allu1.taytaAlluTiedoilla(); allu1.rekisteroi();
@@ -277,7 +276,7 @@ public class Rekisteri {
      * Haetaan joukkueen profiilit
      * @param ehto Joukkue jonka profiileja haetaan
      * @return Listan profiilin joukkueesta...
-     * @throws SailoException 
+     * @throws SailoException Jos jotain menee v‰‰rin
      * @example
      * <pre name="test">
      * #THROWS Exception
