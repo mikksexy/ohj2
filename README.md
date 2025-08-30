@@ -8,7 +8,7 @@ Tekijä: Sami Mikkola
 
 Ohjelman tarkoitus on pystyä pitämään kirjaa CS:GO pelaajien peliasetuksista.
 
-Tarkempia tietoja löytyy suunnitelmasta, mutta ohessa kuitenkin muutama kuva...
+Tarkempia tietoja löytyy [suunnitelman korvikkeesta](https://github.com/mikksexy/ohj2/tree/master/kuvat), mutta ohessa kuitenkin muutama kuva...
 
 ### Ohjelman pääikkuna:
 
